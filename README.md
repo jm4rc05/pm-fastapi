@@ -143,6 +143,7 @@ services:
 
   modulo2:
     path: <pasta do módulo 2>
+```
 
 ### Plugins
 
@@ -150,6 +151,18 @@ Instalar os _plugins_ requeridos para este projeto:
 
 ```sh
 npm i serverless-python-requirements serverless-wsgi serverless-localstack
+```
+
+### Variáveis ambiente
+
+Arquivo `.env` (_na raiz do projeto_):
+
+```ini
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=p057g355
+POSTGRES_HOST=
+POSTGRES_PORT=5432
+PM_DB=pmdb
 ```
 
 ### Módulos
