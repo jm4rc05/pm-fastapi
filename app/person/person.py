@@ -1,6 +1,6 @@
 import os
 
-from util.util import is_authorized, logger
+from util.common import is_authorized, logger
 
 import boto3
 
