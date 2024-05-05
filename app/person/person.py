@@ -1,6 +1,6 @@
 import os
 
-from ..util import is_authorized, logger
+from util.util import is_authorized, logger
 
 import boto3
 
@@ -15,7 +15,7 @@ from ariadne.asgi import GraphQL
 
 from ariadne import load_schema_from_path, QueryType, MutationType, make_executable_schema
 
-from ..database import SessionLocal, engine
+from util.database import SessionLocal, engine
 
 def get_db():
     logger.info('Getting database')
