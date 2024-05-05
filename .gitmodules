@@ -1,3 +1,6 @@
 [submodule "app/resource/util"]
 	path = app/resource/util
 	url = https://github.com/jm4rc05/pm-util.git
+[submodule "app/person/util"]
+	path = app/person/util
+	url = https://github.com/jm4rc05/pm-util.git
