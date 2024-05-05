@@ -160,3 +160,10 @@ podman compose down --volumes
 ```sh
 podman compose down --volumes
 ```
+
+## Sub-módulos
+
+```sh
+git submodule add --force https://github.com/jm4rc05/pm-util.git app/person/util
+git submodule add --force https://github.com/jm4rc05/pm-util.git app/resource/util
+```
