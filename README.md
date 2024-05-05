@@ -1,4 +1,4 @@
-# Desenvolvendo função **AWS** _Lambda_ localmente com **Flask**, **LocalStack** e **Serverless**
+# Desenvolvendo função **AWS** _Lambda_ localmente com **FastAPI**, **LocalStack** e **Serverless** e usando **GraphQL**
 
 ## Configuração do serviço **AWS** para acesso local
 
@@ -53,7 +53,7 @@ pyenv install 3.11
 
 Criar o projeto com as dependências da aplicação que vamos desenvolver:
 
-1. [Flask](https://github.com/pallets/flask) - _framework_ leve para aplicações _web_
+1. [FastAPI](https://github.com/tiangolo/fastapi) - _framework_ leve para API's _web_
 1. [boto3](https://github.com/boto/boto3) - _SDK_ **AWS** para aplicações **Python**
 1. [pytest](https://github.com/pytest-dev/pytest/) - utilitário de testes unitários para **Python**
 1. [requests](https://github.com/psf/requests) - biblioteca _HTTP_ para **Python** (usado nos testes)
@@ -63,12 +63,12 @@ Criar o projeto com as dependências da aplicação que vamos desenvolver:
 mkdir <pasta do projeto>
 cd <pasta do projeto>
 pyenv local 3.11
-pipenv install jwt flask boto3 werkzeug
+pipenv install jwt fastapi boto3 werkzeug
 pipenv install --dev pytest requests
 touch README.md
 ```
 
-Colocar projeto sob controle de versão. O arquivo [`.gitignore`](./.gitignore) - _que poderá ser gerado automaticamente em [gitignore.io](https://www.toptal.com/developers/gitignore/api/visualstudiocode,python,flask,node,localstack,serverless)_:
+Colocar projeto sob controle de versão. O arquivo [`.gitignore`](./.gitignore) - _que poderá ser gerado automaticamente em [gitignore.io](https://www.toptal.com/developers/gitignore/api/visualstudiocode,python,node,localstack,serverless)_:
 
 ```sh
 git init

@@ -1,10 +1,10 @@
 import os
 
-from util import is_authorized, logger
+from ..util import is_authorized, logger
 
 import boto3
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.responses import JSONResponse
 
 from mangum import Mangum
@@ -14,6 +14,16 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from ariadne.asgi import GraphQL
 
 from ariadne import load_schema_from_path, QueryType, MutationType, make_executable_schema
+
+from ..database import SessionLocal, engine
+
+def get_db():
+    logger.info('Getting database')
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 api = FastAPI()
 
@@ -29,7 +39,7 @@ def resources(*_):
     return resources_db
 
 @mutation.field("add")
-def add(_, info, name, description):
+def add(_, info, name, description, db: Session = Depends(get_db)):
     resources_db.append({ "name": name, "description": description })
     return {"name": name, "description": description }
 

@@ -10,21 +10,21 @@ services:
       - '4510-4559:4510-4559'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-  # postgres:
-  #   container_name: postgres
-  #   image: postgres:latest
-  #   restart: unless-stopped
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "sh -c 'pg_isready -U postgre -d postgre'"]
-  #     interval: 30s
-  #     timeout: 60s
-  #     retries: 5
-  #     start_period: 90s
-  #   ports:
-  #     - '5432:5432'
-  #   volumes:
-  #     - $PWD/postgres/config:/etc/postgresql:ro
-  #     - $PWD/postgres/init:/docker-entrypoint-initdb.d:ro
-  #   environment:
-  #     - POSTGRES_USER=$POSTGRES_USER
-  #     - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U postgre -d postgre'"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 90s
+    ports:
+      - '5432:5432'
+    volumes:
+      - $PWD/postgres/config:/etc/postgresql:ro
+      - $PWD/postgres/init:/docker-entrypoint-initdb.d:ro
+    environment:
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
