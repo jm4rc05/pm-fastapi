@@ -12,10 +12,10 @@ REGION="us-east-1"
 IMAGE_DEF_PATH="file://PostgreSQL-image.json"
 
 # Create container
-podman build --tag $IMAGE_NAME --file $DOCKERFILE_PATH
+docker build --tag $IMAGE_NAME --file $DOCKERFILE_PATH
 
 # Export image
-podman save $IMAGE_NAME > $IMAGE_NAME.tar
+docker save $IMAGE_NAME > $IMAGE_NAME.tar
 echo "Created $IMAGE_NAME.tar"
 
 # Create the S3 bucket

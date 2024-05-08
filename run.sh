@@ -1,8 +1,8 @@
 #!/bin/zsh
 
 # Cleanup
-podman compose down --volumes
-podman compose up --detach
+docker compose down --volumes
+docker compose up --detach
 echo 'Esperando a morte da bezerra...'
 sleep 10
 
@@ -22,6 +22,8 @@ function person() {
     # Deploy/test person
     sls person:deploy --stage local && export endpoint_person=`aws lambda create-function-url-config --function-name person-local-api --auth-type NONE | jq -r '.FunctionUrl'`
 
+    echo 'End point: '${endpoint_person}
+
     # Unauthorized
     curl -X POST ${endpoint_person}/person/ -H 'Content-Type: application/json' -d '{"query": "{ persons { name title } }"}'
 
@@ -38,6 +40,8 @@ function person() {
 function resource() {
     # Deploy/test resource
     sls resource:deploy --stage local && export endpoint_resource=`aws lambda create-function-url-config --function-name resource-local-api --auth-type NONE | jq -r '.FunctionUrl'`
+
+    echo 'End point: '${endpoint_resource}
 
     # Unauthorized
     curl -X POST ${endpoint_resource}/resource/ -H 'Content-Type: application/json' -d '{"query": "{ resources { name description } }"}'

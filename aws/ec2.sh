@@ -15,8 +15,8 @@ SUBNET_AVAILABILITY_ZONE="us-east-1a"
 SCRIPT_PATH="./setup.sh"
 
 # Cleanup
-podman compose down --volumes
-podman compose up --detach
+docker compose down --volumes
+docker compose up --detach
 sudo rm "$KEY_PAIR_NAME"
 
 # Create key pair
