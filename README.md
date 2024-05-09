@@ -1,5 +1,12 @@
 # Desenvolvendo função **AWS** _Lambda_ localmente com **FastAPI**, **LocalStack** e **Serverless** e usando **GraphQL**
 
+## Checkout
+
+```sh
+git clone https://github.com/jm4rc05/pm-fastapi.git
+git submodule update --init --recursive
+```
+
 ## Configuração do serviço **AWS** para acesso local
 
 Como iremos utilizar **LocalStack** e **Serverless** para desenvolvimento e testes de nossa função **AWS** _Lambda_, iremos configurar nosso ambiente de trabalho para apontar para nossa configuração local. Outra opção é utilizar o utilitário [`awslocal`](https://github.com/localstack/awscli-local) - _presume-se que já temos [**AWS** _Command Line Interface_](https://aws.amazon.com/cli/) instalado_:
