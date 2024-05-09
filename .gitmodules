@@ -4,12 +4,6 @@
 [submodule "app/person/util"]
 	path = app/person/util
 	url = https://github.com/jm4rc05/pm-util.git
-[submodule "app/person/db"]
-	path = app/person/db
-	url = https://github.com/jm4rc05/pm-db.git
-[submodule "app/resource/db"]
-	path = app/resource/db
-	url = https://github.com/jm4rc05/pm-db.git
 [submodule "app/person/graph"]
 	path = app/person/graph
 	url = https://github.com/jm4rc05/pm-graph.git
