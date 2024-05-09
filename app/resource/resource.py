@@ -4,7 +4,7 @@ from util.common import is_authorized, logger
 
 import boto3
 
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from mangum import Mangum
