@@ -58,5 +58,5 @@ function resource() {
     curl -X POST ${endpoint_resource}/resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "{ resources { name description } }"}'
 }
 
-# person
-resource
+person
+# resource

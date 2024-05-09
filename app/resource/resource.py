@@ -11,8 +11,6 @@ from mangum import Mangum
 
 from ariadne.asgi import GraphQL
 
-from ariadne import load_schema_from_path, QueryType, MutationType, make_executable_schema
-
 from util.database import SessionLocal, engine
 
 def get_db():
@@ -24,23 +22,7 @@ def get_db():
 
 api = FastAPI()
 
-defs = load_schema_from_path('schema')
-query = QueryType()
-mutation = MutationType()
-
 resources_db = []
-
-@query.field('resources')
-def resources(*_):
-    logger.info('Query resources')
-    return resources_db
-
-@mutation.field('add')
-def add(_, info, name, description, db: SessionLocal = Depends(get_db)):
-    resources_db.append({ 'name': name, 'description': description })
-    return {'name': name, 'description': description }
-
-schema = make_executable_schema(defs, [query, mutation])
 
 @api.middleware('http')
 async def dispatch(request: Request, next):
