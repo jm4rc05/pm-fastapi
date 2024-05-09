@@ -11,16 +11,7 @@ from mangum import Mangum
 
 from ariadne.asgi import GraphQL
 
-from util.database import SessionLocal, engine
-
 from graph.queries import person
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 api = FastAPI()
 
