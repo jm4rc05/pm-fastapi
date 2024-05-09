@@ -18,6 +18,8 @@ header='{"alg":"HS256","typ":"JWT"}' && payload='{"token": "'${kms_api_key_value
 
 export authorization_token="${header_payload}.${signature}" && echo Authorization token: $authorization_token
 
+echo 'End point: '${authorization_token}
+
 function person() {
     # Deploy/test person
     sls person:deploy --stage local && export endpoint_person=`aws lambda create-function-url-config --function-name person-local-api --auth-type NONE | jq -r '.FunctionUrl'`

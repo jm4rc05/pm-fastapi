@@ -11,7 +11,7 @@ starlette = "*"
 mangum = "*"
 fastapi = "==0.99.0"
 sqlalchemy = "*"
-psycopg2-binary = "*"
+pg8000 = "*"
 
 [dev-packages]
 pytest = "*"

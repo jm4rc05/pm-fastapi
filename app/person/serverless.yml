@@ -34,8 +34,6 @@ plugins:
   - serverless-localstack
 
 custom:
-  pythonRequirements:
-    usePipenv: false
   localstack:
     stages:
       - local
