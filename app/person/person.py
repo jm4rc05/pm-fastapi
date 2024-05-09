@@ -18,19 +18,11 @@ from ariadne import load_schema_from_path, QueryType, MutationType, make_executa
 from util.database import SessionLocal, engine
 
 def get_db():
-    user = os.environ["POSTGRES_USER"]
-    password = os.environ["POSTGRES_PASSWORD"]
-    host = os.environ["POSTGRES_HOST"]
-    port = os.environ["POSTGRES_PORT"]
-    database = os.environ["POSTGRES_DATABASE"]
-
-    SQLALCHEMY_DATABASE_URL = f"postgresql://{user}:{password}@{host}:{port}/{database}"
-    logger.info(f'Connection URL: {SQLALCHEMY_DATABASE_URL}')
-    # db = SessionLocal()
-    # try:
-    #     yield db
-    # finally:
-    #     db.close()
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 api = FastAPI()
 
@@ -46,7 +38,7 @@ def persons(*_):
     return persons_db
 
 @mutation.field("add")
-def add(_, info, name, title, db: Session = Depends(get_db)):
+def add(_, info, name, title, db: SessionLocal = Depends(get_db)):
     persons_db.append({ "name": name, "title": title })
     return {"name": name, "title": title }
 
