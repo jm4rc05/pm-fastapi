@@ -10,3 +10,9 @@
 [submodule "app/resource/db"]
 	path = app/resource/db
 	url = https://github.com/jm4rc05/pm-db.git
+[submodule "app/person/graph"]
+	path = app/person/graph
+	url = https://github.com/jm4rc05/pm-graph.git
+[submodule "app/resource/graph"]
+	path = app/resource/graph
+	url = https://github.com/jm4rc05/pm-graph.git
