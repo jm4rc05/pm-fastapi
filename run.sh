@@ -19,6 +19,9 @@ header='{"alg":"HS256","typ":"JWT"}' && payload='{"token": "'${kms_api_key_value
 export authorization_token="${header_payload}.${signature}" && echo Authorization token: $authorization_token
 
 function person() {
+    # Setup dependencies
+    pipenv requirements > app/person/requirements.txt
+
     # Deploy/test person
     sls person:deploy --stage local && export endpoint_person=`aws lambda create-function-url-config --function-name person-local-api --auth-type NONE | jq -r '.FunctionUrl'` && echo 'End point: '${endpoint_person}
 
@@ -28,14 +31,17 @@ function person() {
     # Authorized
     curl -X POST ${endpoint_person}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Carla\", title: \"PhD\") { name, title } }" }'
 
-    curl -X POST ${endpoint_person}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Pedro\", title: \"Undergraduate\") { name, title } }" }'
+    # curl -X POST ${endpoint_person}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Pedro\", title: \"Undergraduate\") { name, title } }" }'
 
-    curl -X POST ${endpoint_person}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Zé\", title: \"Bocó\") { name, title } }" }'
+    # curl -X POST ${endpoint_person}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Zé\", title: \"Bocó\") { name, title } }" }'
 
     curl -X POST ${endpoint_person}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "{ persons { name title } }"}'
 }
 
 function resource() {
+    # Setup dependencies
+    pipenv requirements > app/resource/requirements.txt
+
     # Deploy/test resource
     sls resource:deploy --stage local && export endpoint_resource=`aws lambda create-function-url-config --function-name resource-local-api --auth-type NONE | jq -r '.FunctionUrl'` && echo 'End point: '${endpoint_resource}
 
@@ -52,5 +58,5 @@ function resource() {
     curl -X POST ${endpoint_resource}/resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "{ resources { name description } }"}'
 }
 
-person
-# resource
+# person
+resource

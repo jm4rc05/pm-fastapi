@@ -4,12 +4,10 @@ from util.common import is_authorized, logger
 
 import boto3
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Request, Depends
 from fastapi.responses import JSONResponse
 
 from mangum import Mangum
-
-from starlette.middleware.base import BaseHTTPMiddleware
 
 from ariadne.asgi import GraphQL
 
@@ -18,7 +16,6 @@ from ariadne import load_schema_from_path, QueryType, MutationType, make_executa
 from util.database import SessionLocal, engine
 
 def get_db():
-    logger.info('Getting database')
     db = SessionLocal()
     try:
         yield db
@@ -33,29 +30,27 @@ mutation = MutationType()
 
 resources_db = []
 
-@query.field("resources")
+@query.field('resources')
 def resources(*_):
     logger.info('Query resources')
     return resources_db
 
-@mutation.field("add")
-def add(_, info, name, description, db: Session = Depends(get_db)):
-    resources_db.append({ "name": name, "description": description })
-    return {"name": name, "description": description }
+@mutation.field('add')
+def add(_, info, name, description, db: SessionLocal = Depends(get_db)):
+    resources_db.append({ 'name': name, 'description': description })
+    return {'name': name, 'description': description }
 
 schema = make_executable_schema(defs, [query, mutation])
 
-class AuthMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request, next):
-        if not is_authorized(request):
-            log = 'Not authorized'
-            logger.error(log)
-            return JSONResponse(content = { 'ERROR': { 'message': log } }, status_code = 401)
+@api.middleware('http')
+async def dispatch(request: Request, next):
+    if not is_authorized(request):
+        log = 'Not authorized'
+        logger.error(log)
+        return JSONResponse(content = { 'ERROR': { 'message': log } }, status_code = 401)
 
-        return await next(request)
+    return await next(request)
 
-api.add_middleware(AuthMiddleware)
+api.mount('/resource/', GraphQL(schema, debug = True))
 
-api.mount("/resource/", GraphQL(schema, debug = True))
-
-handler = Mangum(api, lifespan = "off")
+handler = Mangum(api, lifespan = 'off')
