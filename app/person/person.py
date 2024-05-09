@@ -15,8 +15,6 @@ from graph.queries import person
 
 api = FastAPI()
 
-persons_db = []
-
 @api.middleware('http')
 async def dispatch(request: Request, next):
     if not is_authorized(request):
