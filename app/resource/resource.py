@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 from mangum import Mangum
 
 from ariadne.asgi import GraphQL
+from graph.queries import resource
 
 api = FastAPI()
 
@@ -22,6 +23,6 @@ async def dispatch(request: Request, next):
 
     return await next(request)
 
-api.mount('/resource/', GraphQL(schema, debug = True))
+api.mount('/resource/', GraphQL(resource.schema('graph'), debug = True))
 
 handler = Mangum(api, lifespan = 'off')

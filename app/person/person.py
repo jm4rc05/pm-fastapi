@@ -10,7 +10,6 @@ from fastapi.responses import JSONResponse
 from mangum import Mangum
 
 from ariadne.asgi import GraphQL
-
 from graph.queries import person
 
 api = FastAPI()
