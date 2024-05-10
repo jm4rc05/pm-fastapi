@@ -24,6 +24,6 @@ async def dispatch(request: Request, next):
 
     return await next(request)
 
-api.mount('/person/', GraphQL(person.schema, debug = True))
+api.mount('/person/', GraphQL(person.schema('graph'), debug = True))
 
 handler = Mangum(api, lifespan = 'off')
