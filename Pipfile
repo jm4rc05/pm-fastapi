@@ -11,6 +11,7 @@ mangum = "*"
 fastapi = "==0.99.0"
 sqlalchemy = "*"
 pg8000 = "*"
+python-decouple = "*"
 
 [dev-packages]
 pytest = "*"
