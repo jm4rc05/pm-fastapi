@@ -18,49 +18,65 @@ header='{"alg":"HS256","typ":"JWT"}' && payload='{"token": "'${kms_api_key_value
 
 export authorization_token="${header_payload}.${signature}" && echo 'export authorization_token='$authorization_token
 
-function person() {
+function deploy() {
     # Setup dependencies
-    pipenv requirements > app/person/requirements.txt
+    pipenv requirements > api/requirements.txt
 
-    # Deploy/test person
-    sls person:deploy --stage local && export endpoint_person=`aws lambda create-function-url-config --function-name person-local-api --auth-type NONE | jq -r '.FunctionUrl'` && echo 'export endpoint_person='${endpoint_person}
+    # Deploy/test api
+    sls api:deploy --stage local && export endpoint_api=`aws lambda create-function-url-config --function-name api-local-api --auth-type NONE | jq -r '.FunctionUrl'` && echo 'export endpoint_api='${endpoint_api}
+}
 
+function person() {
     # Unauthorized
-    curl -X POST ${endpoint_person}/person/ -H 'Content-Type: application/json' -d '{"query": "{ persons { name title } }"}'
+    curl -X POST ${endpoint_api}/person/ -H 'Content-Type: application/json' -d '{"query": "{ persons { name title } }"}'
 
     # Authorized
-    curl -X POST ${endpoint_person}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Carla\", title: \"PhD\") { name, title } }" }'
+    curl -X POST ${endpoint_api}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Carla\", title: \"PhD\") { name, title } }" }'
 
-    # curl -X POST ${endpoint_person}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Pedro\", title: \"Undergraduate\") { name, title } }" }'
+    # curl -X POST ${endpoint_api}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Pedro\", title: \"Undergraduate\") { name, title } }" }'
 
-    # curl -X POST ${endpoint_person}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Zé\", title: \"Bocó\") { name, title } }" }'
+    # curl -X POST ${endpoint_api}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Zé\", title: \"Bocó\") { name, title } }" }'
 
-    curl -X POST ${endpoint_person}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "{ persons { name title } }"}'
+    curl -X POST ${endpoint_api}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "{ persons { name title } }"}'
 
-    curl -X POST ${endpoint_person}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { update(name: \"Carla\", title: \"PhD Candidate\") { name, title } }" }'
+    curl -X POST ${endpoint_api}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { update(name: \"Carla\", title: \"PhD Candidate\") { name, title } }" }'
 
-    curl -X POST ${endpoint_person}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { delete(name: \"Carla\") }" }'
+    curl -X POST ${endpoint_api}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { delete(name: \"Carla\") }" }'
+}
+
+function person() {
+    # Unauthorized
+    curl -X POST ${endpoint_api}/person/ -H 'Content-Type: application/json' -d '{"query": "{ persons { name title } }"}'
+
+    # Authorized
+    curl -X POST ${endpoint_api}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Carla\", title: \"PhD\") { name, title } }" }'
+
+    # curl -X POST ${endpoint_api}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Pedro\", title: \"Undergraduate\") { name, title } }" }'
+
+    # curl -X POST ${endpoint_api}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Zé\", title: \"Bocó\") { name, title } }" }'
+
+    curl -X POST ${endpoint_api}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "{ persons { name title } }"}'
+
+    curl -X POST ${endpoint_api}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { update(name: \"Carla\", title: \"PhD Candidate\") { name, title } }" }'
+
+    curl -X POST ${endpoint_api}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { delete(name: \"Carla\") }" }'
 }
 
 function resource() {
-    # Setup dependencies
-    pipenv requirements > app/resource/requirements.txt
-
-    # Deploy/test resource
-    sls resource:deploy --stage local && export endpoint_resource=`aws lambda create-function-url-config --function-name resource-local-api --auth-type NONE | jq -r '.FunctionUrl'` && echo 'export endpoint_resource='${endpoint_resource}
-
     # Unauthorized
-    curl -X POST ${endpoint_resource}/resource/ -H 'Content-Type: application/json' -d '{"query": "{ resources { name description } }"}'
+    curl -X POST ${endpoint_api}/resource/ -H 'Content-Type: application/json' -d '{"query": "{ resources { name description } }"}'
 
     # Authorized
-    curl -X POST ${endpoint_resource}/resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Sala90\", description: \"Sala de 90 lugares\") { name, description } }" }'
+    curl -X POST ${endpoint_api}/resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Sala90\", description: \"Sala de 90 lugares\") { name, description } }" }'
 
-    curl -X POST ${endpoint_resource}/resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Lab90\", description: \"Laboratório de 90 bancadas\") { name, description } }" }'
+    curl -X POST ${endpoint_api}/resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Lab90\", description: \"Laboratório de 90 bancadas\") { name, description } }" }'
 
-    curl -X POST ${endpoint_resource}/resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Aud90\", description: \"Auditório de 90 lugares\") { name, description } }" }'
+    curl -X POST ${endpoint_api}/resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Aud90\", description: \"Auditório de 90 lugares\") { name, description } }" }'
 
-    curl -X POST ${endpoint_resource}/resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "{ resources { name description } }"}'
+    curl -X POST ${endpoint_api}/resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "{ resources { name description } }"}'
 }
+
+deploy
 
 person
 # resource

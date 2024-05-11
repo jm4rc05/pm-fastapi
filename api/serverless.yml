@@ -1,4 +1,4 @@
-service: resource
+service: api
 
 frameworkVersion: '3'	
 useDotenv: true
@@ -40,7 +40,7 @@ custom:
 
 functions:
   api:
-    handler: resource.handler
+    handler: api.handler
     events:
       - http: 'ANY /'
       - http: 'ANY /{proxy+}'
@@ -65,5 +65,5 @@ resources:
     APIKeyAlias:
       Type: AWS::KMS::Alias
       Properties:
-        AliasName: "alias/resource-kms-api-key"
+        AliasName: "alias/kms-api-key"
         TargetKeyId: !Ref APIKey

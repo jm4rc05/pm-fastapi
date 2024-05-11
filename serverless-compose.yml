@@ -1,7 +1,4 @@
 services:
   
-  person:
-    path: app/person
-
-  resource:
-    path: app/resource
+  api:
+    path: api
