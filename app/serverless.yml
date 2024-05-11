@@ -1,4 +1,4 @@
-service: api
+service: app
 
 frameworkVersion: '3'	
 useDotenv: true
@@ -39,8 +39,8 @@ custom:
       - local
 
 functions:
-  api:
-    handler: api.handler
+  app:
+    handler: routes.handler
     events:
       - http: 'ANY /'
       - http: 'ANY /{proxy+}'

@@ -59,6 +59,6 @@ def delete(_, info, name, db: SessionLocal = Depends(session)):
     return {'message': f'{name} deleted'}
 
 def schema() -> GraphQLSchema:
-    load_path = f'{path}/types/person.graphql'
+    load_path = 'types/person.graphql'
     defs = load_schema_from_path(load_path)
     return make_executable_schema(defs, [query, mutation])

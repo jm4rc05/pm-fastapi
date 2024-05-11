@@ -31,6 +31,6 @@ def add(_, info, name, description, db: SessionLocal = Depends(session)):
     return {'name': name, 'description': description }
 
 def schema() -> GraphQLSchema:
-    load_path = f'graphql/types/resource.graphql'
+    load_path = 'types/resource.graphql'
     defs = load_schema_from_path(load_path)
     return make_executable_schema(defs, [query, mutation])

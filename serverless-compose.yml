@@ -1,4 +1,4 @@
 services:
   
-  api:
-    path: api
+  app:
+    path: app
