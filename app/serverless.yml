@@ -39,7 +39,7 @@ custom:
       - local
 
 functions:
-  app:
+  api:
     handler: routes.handler
     events:
       - http: 'ANY /'

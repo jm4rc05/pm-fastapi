@@ -1,17 +1,25 @@
 type Resource {
-    id: ID!
+    id: Int!
     name: String!
     description: String!
 }
 
 type Query{
-    resource: Resource,
-    resources: [Resource!]!
+    resource(id: Int!): Resource,
+    resources: [Resource]
 }
 
 type Mutation {
     add(
         name: String!,
         description: String!
-    ): Resource!
+    ): Resource,
+    update(
+        id: Int!,
+        name: String,
+        description: String
+    ): Resource,
+    delete(
+        id: Int!
+    ): Boolean
 }

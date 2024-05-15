@@ -1,29 +1,24 @@
-import os
-
-from util.common import is_authorized, logger
-
-import boto3
-
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Request, Response
 
 from mangum import Mangum
 
 from ariadne.asgi import GraphQL
 
-from resolvers import person, resource
+from api.database import session_factory, Base, engine
+from api.middleware.authorization import AuthorizationMiddleware
+from api.middleware.database import DatabaseMiddleware
+from api.resolvers import person, resource
+from api.util.common import is_authorized, logger
 
 
 api = FastAPI()
 
-@api.middleware('http')
-async def dispatch(request: Request, next):
-    if not is_authorized(request):
-        log = 'Not authorized'
-        logger.error(log)
-        return JSONResponse(content = { 'ERROR': { 'message': log } }, status_code = 401)
+@api.on_event('startup')
+def startup():
+    Base.metadata.create_all(bind = engine)
 
-    return await next(request)
+api.add_middleware(AuthorizationMiddleware)
+api.add_middleware(DatabaseMiddleware, db = session_factory())
 
 api.mount('/person/', GraphQL(person.schema(), debug = True))
 api.mount('/resource/', GraphQL(resource.schema(), debug = True))

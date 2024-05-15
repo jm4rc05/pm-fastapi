@@ -9,9 +9,9 @@ pyjwt = "*"
 ariadne = "*"
 mangum = "*"
 fastapi = "==0.99.0"
+python-decouple = "*"
 sqlalchemy = "*"
 pg8000 = "*"
-python-decouple = "*"
 
 [dev-packages]
 pytest = "*"

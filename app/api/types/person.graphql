@@ -1,11 +1,11 @@
 type Person {
-    id: ID!
+    id: Int!
     name: String!
     title: String!
 }
 
 type Query{
-    person(name: String!): Person,
+    person(id: Int!): Person,
     persons: [Person]
 }
 
@@ -15,10 +15,11 @@ type Mutation {
         title: String!
     ): Person,
     update(
-        name: String!,
-        title: String!
+        id: Int!,
+        name: String,
+        title: String
     ): Person,
     delete(
-        name: String!
-    ): String!
+        id: Int!
+    ): Boolean
 }
