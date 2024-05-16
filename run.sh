@@ -41,7 +41,7 @@ function person() {
 
     curl -X POST ${endpoint_app}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { update(id: 1, name: \"Carla\", title: \"PhD Candidate\") { id, name, title } }" }'
 
-    curl -X POST ${endpoint_app}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { delete(name: \"Carla\") }" }'
+    curl -X POST ${endpoint_app}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { delete(id: 2 }" }'
 
     curl -X POST ${endpoint_app}/person/ -H'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "{ persons { name title } }"}'
 }

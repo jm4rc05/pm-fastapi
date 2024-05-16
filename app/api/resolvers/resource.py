@@ -23,7 +23,7 @@ async def resources(*_):
         return db.query(Resource).all()
 
 @mutation.field('add')
-async def add(_, info, name, description):
+async def add(_, __, name, description):
     _resource = Resource(name = name, description = description)
     db = session_factory()
     with db as db:
