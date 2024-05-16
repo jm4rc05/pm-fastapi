@@ -6,7 +6,7 @@ type Person {
 
 type Query{
     person(id: Int!): Person,
-    persons: [Person]
+    persons: [Person!]!
 }
 
 type Mutation {

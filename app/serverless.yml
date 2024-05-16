@@ -40,7 +40,7 @@ custom:
 
 functions:
   api:
-    handler: routes.handler
+    handler: main.handler
     events:
       - http: 'ANY /'
       - http: 'ANY /{proxy+}'
