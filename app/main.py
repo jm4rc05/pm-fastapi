@@ -1,13 +1,10 @@
 from fastapi import FastAPI, Request, Response
-
 from mangum import Mangum
-
 from ariadne.asgi import GraphQL
-
 from api.db.database import session_factory, Base, engine
 from api.middleware.authorization import AuthorizationMiddleware
 from api.resolvers import person, resource
-from api.util.common import is_authorized, logger
+from api.security.jwt import is_authorized
 
 
 api = FastAPI()

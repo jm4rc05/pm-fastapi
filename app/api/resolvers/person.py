@@ -1,10 +1,7 @@
 from ariadne import load_schema_from_path, QueryType, MutationType, make_executable_schema
 from graphql import GraphQLSchema
-
 from api.db.database import session_factory
 from api.db.models.person import Person
-
-from api.util.common import logger
 
 
 query = QueryType()

@@ -1,9 +1,13 @@
 from fastapi import Request, Response
 from fastapi.responses import JSONResponse
-
+from decouple import config
+import logging
 from starlette.middleware.base import BaseHTTPMiddleware
+from api.security.jwt import is_authorized
 
-from api.util.common import is_authorized, logger
+
+logger = logging.getLogger()
+logger.setLevel(config('LOG_LEVEL', default = 'INFO'))
 
 
 class AuthorizationMiddleware(BaseHTTPMiddleware):
