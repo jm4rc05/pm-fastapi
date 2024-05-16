@@ -8,11 +8,7 @@ sleep 10
 
 # Security
 # API
-export kms_app_key_value=$(openssl rand -hex 16) && echo KMS API Key: $kms_app_key_value
-aws ssm put-parameter --name 'kms-api-key' --value ${kms_app_key_value} --type 'SecureString' --overwrite
-# DB
-export kms_db_key_value=$(openssl rand -hex 16) && echo KMS DB Key: $kms_db_key_value
-aws ssm put-parameter --name 'kms-db-key' --value ${kms_db_key_value} --type 'SecureString' --overwrite
+export kms_app_key_value=cf1ca89a52f56a64f643f46b790cab68
 
 header='{"alg":"HS256","typ":"JWT"}' && payload='{"token": "'${kms_app_key_value}'"}' && encoded_header=$(echo -n "$header" | base64 | tr -d '=' | tr '/+' '_-') && encoded_payload=$(echo -n "$payload" | base64 | tr -d '=' | tr '/+' '_-') && header_payload="${encoded_header}.${encoded_payload}" && signature=$(echo -n "$header_payload" | openssl dgst -sha256 -hmac "${kms_app_key_value}" -binary | base64 | tr -d '=' | tr '/+' '_-')
 
