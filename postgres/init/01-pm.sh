@@ -1,10 +1,24 @@
 #!/bin/bash
 set -e
 
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
-    CREATE USER pmdb;
-    CREATE DATABASE pmdb;
-    ALTER DATABASE pmdb OWNER TO pmdb;
+psql -U "$POSTGRES_USER" <<-EOSQL
+    CREATE TABLE "public"."account" ( 
+        "id" SERIAL,
+        "name" VARCHAR UNIQUE NOT NULL,
+        "key" VARCHAR NOT NULL,
+        "salt" VARCHAR NOT NULL,
+        CONSTRAINT "account_pkey" PRIMARY KEY ("id")
+    );
+    CREATE INDEX "ix_account_id" ON "public"."account" (
+        "id" ASC
+    );
+    INSERT INTO "public"."account" (
+        "name", 
+        "key",
+        "salt"
+    ) VALUES (
+        'admin', 
+        '$ADMIN_KEY',
+        '$ADMIN_SALT'
+    );
 EOSQL
-
-psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" -c "ALTER ROLE pmdb WITH PASSWORD 'pmdb';"

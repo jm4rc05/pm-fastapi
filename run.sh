@@ -1,18 +1,26 @@
 #!/bin/zsh
 
-# Cleanup
-docker compose down --volumes
-docker compose up --detach
-echo 'Esperando a morte da bezerra...'
-sleep 10
+function setup() {
+    # Security
+    # User
+    echo > .env.local
+    echo "ADMIN_KEY=`openssl rand -hex 32`" >> .env.local
+    echo "ADMIN_SALT=`openssl rand -hex 16`" >> .env.local
 
-# Security
-# API
-export kms_app_key_value=cf1ca89a52f56a64f643f46b790cab68
+    # Cleanup
+    docker compose down --volumes
+    docker compose up --detach
+    echo 'Esperando a morte da bezerra...'
+    sleep 10
 
-header='{"alg":"HS256","typ":"JWT"}' && payload='{"token": "'${kms_app_key_value}'"}' && encoded_header=$(echo -n "$header" | base64 | tr -d '=' | tr '/+' '_-') && encoded_payload=$(echo -n "$payload" | base64 | tr -d '=' | tr '/+' '_-') && header_payload="${encoded_header}.${encoded_payload}" && signature=$(echo -n "$header_payload" | openssl dgst -sha256 -hmac "${kms_app_key_value}" -binary | base64 | tr -d '=' | tr '/+' '_-')
+    # Security
+    # API
+    export SECRET_KEY=`openssl rand -hex 16`
 
-export authorization_token="${header_payload}.${signature}" && echo 'export authorization_token='$authorization_token
+    header='{"alg":"HS256","typ":"JWT"}' && payload='{"token": "'${SECRET_KEY}'"}' && encoded_header=$(echo -n "$header" | base64 | tr -d '=' | tr '/+' '_-') && encoded_payload=$(echo -n "$payload" | base64 | tr -d '=' | tr '/+' '_-') && header_payload="${encoded_header}.${encoded_payload}" && signature=$(echo -n "$header_payload" | openssl dgst -sha256 -hmac "${SECRET_KEY}" -binary | base64 | tr -d '=' | tr '/+' '_-')
+
+    export authorization_token="${header_payload}.${signature}" && echo 'export authorization_token='$authorization_token
+}
 
 function deploy() {
     # Setup dependencies
@@ -37,7 +45,7 @@ function person() {
 
     curl -X POST ${endpoint_app}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { update(id: 1, name: \"Carla\", title: \"PhD Candidate\") { id, name, title } }" }'
 
-    curl -X POST ${endpoint_app}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { delete(id: 2 }" }'
+    curl -X POST ${endpoint_app}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { delete(id: 2) }" }'
 
     curl -X POST ${endpoint_app}/person/ -H'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "{ persons { name title } }"}'
 }
@@ -55,6 +63,8 @@ function resource() {
 
     curl -X POST ${endpoint_app}/resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "{ resources { name description } }"}'
 }
+
+setup
 
 deploy
 

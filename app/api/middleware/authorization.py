@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from decouple import config
 import logging
 from starlette.middleware.base import BaseHTTPMiddleware
-from api.security.jwt import is_authorized
+from api.security.authentication import is_authorized
 
 
 logger = logging.getLogger()

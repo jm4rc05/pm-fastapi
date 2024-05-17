@@ -4,7 +4,7 @@ from ariadne.asgi import GraphQL
 from api.db.database import session_factory, Base, engine
 from api.middleware.authorization import AuthorizationMiddleware
 from api.resolvers import person, resource
-from api.security.jwt import is_authorized
+from api.security.authentication import is_authorized
 
 
 api = FastAPI()
