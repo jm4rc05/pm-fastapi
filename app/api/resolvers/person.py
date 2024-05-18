@@ -22,7 +22,6 @@ def persons(*_):
 @mutation.field('add')
 def add(_, __, name, title):
     _person = Person(name = name, title = title)
-    # db = session_factory()
     with session_factory() as db:
         db.add(_person)
         db.commit()
@@ -32,8 +31,7 @@ def add(_, __, name, title):
 
 @mutation.field('update')
 def update(_, __, id, name = None, title = None):
-    db = session_factory()
-    with db as db:
+    with session_factory() as db:
         _person = db.query(Person).filter(Person.id == id).first()
         if _person:
             if name:
@@ -47,8 +45,7 @@ def update(_, __, id, name = None, title = None):
 
 @mutation.field('delete')
 def delete(_, __, id):
-    db = session_factory()
-    with db as db:
+    with session_factory() as db:
         _person = db.query(Person).filter(Person.id == id).first()
         if _person:
             db.delete(_person)

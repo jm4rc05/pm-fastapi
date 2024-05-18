@@ -9,21 +9,18 @@ mutation = MutationType()
 
 @query.field('resource')
 def resource(_, id):
-    db = session_factory()
-    with db as db:
+    with session_factory() as db:
         return db.query(Resource).filter(Resource.id == id).first()
 
 @query.field('resources')
 async def resources(*_):
-    db = session_factory()
-    with db as db:
+    with session_factory() as db:
         return db.query(Resource).all()
 
 @mutation.field('add')
 async def add(_, __, name, description):
     _resource = Resource(name = name, description = description)
-    db = session_factory()
-    with db as db:
+    with session_factory() as db:
         db.add(_resource)
         db.commit()
         db.refresh(_resource)
