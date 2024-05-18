@@ -165,11 +165,8 @@ npm i serverless-python-requirements serverless-wsgi serverless-localstack
 Arquivo `.env` (_na raiz do projeto_):
 
 ```ini
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=p057g355
-POSTGRES_HOST=
-POSTGRES_PORT=5432
-PM_DB=pmdb
+POSTGRES_USER=pgdm
+POSTGRES_PASSWORD=pgdm
 ```
 
 ### Módulos
