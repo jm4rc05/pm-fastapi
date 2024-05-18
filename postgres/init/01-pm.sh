@@ -2,6 +2,13 @@
 set -e
 
 psql -U "$POSTGRES_USER" <<-EOSQL
+    CREATE USER pmdb;
+    CREATE DATABASE pmdb;
+    ALTER DATABASE pmdb OWNER TO pmdb;
+    ALTER ROLE pmdb WITH PASSWORD 'pmdb';
+EOSQL
+
+psql -U "pmdb" -d "pmbd" <<-EOSQL
     CREATE TABLE "public"."account" ( 
         "id" SERIAL,
         "name" VARCHAR UNIQUE NOT NULL,
