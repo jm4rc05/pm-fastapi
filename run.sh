@@ -87,6 +87,10 @@ function main() {
 
     deploy
     
+    # Caso deseje criar a conta "admin", mas já foi criada no script 
+    # de inicialização do servidor PostgreSQL
+    # veja: `postgres/init/01-pm.sh`
+    # Variáveis `ADMIN_KEY` e `ADMIN_SALT` foram criadas em `setup()`
     # admin
 
     person
