@@ -8,11 +8,12 @@ function jwt() {
 
 function setup() {
     # Security
-    # User
+    # User "admin" que será usado em `compose.yml`
+    # e na função `admin()` - opcional
     echo "ADMIN_KEY=`openssl rand -hex 32`" > .env.local
     echo "ADMIN_SALT=`openssl rand -hex 16`" >> .env.local
 
-    # Cleanup
+    # Cleanup - recria os containers
     docker compose down --volumes
     docker compose up --detach
     echo 'Esperando a morte da bezerra...'
@@ -87,10 +88,12 @@ function main() {
 
     deploy
     
-    # Caso deseje criar a conta "admin", mas já foi criada no script 
-    # de inicialização do servidor PostgreSQL
-    # veja: `postgres/init/01-pm.sh`
-    # Variáveis `ADMIN_KEY` e `ADMIN_SALT` foram criadas em `setup()`
+    # --------------------------------------------------------------- #
+    # Caso deseje criar a conta "admin", mas já foi criada no script  #
+    # de inicialização do servidor PostgreSQL                         #
+    # veja: `postgres/init/01-pm.sh`                                  #
+    # Variáveis `ADMIN_KEY` e `ADMIN_SALT` foram criadas em `setup()` #
+    # --------------------------------------------------------------- #
     # admin
 
     person
