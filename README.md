@@ -165,9 +165,26 @@ npm i serverless-python-requirements serverless-wsgi serverless-localstack
 Arquivo `.env` (_na raiz do projeto_):
 
 ```ini
-POSTGRES_USER=pgdm
-POSTGRES_PASSWORD=pgdm
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
 ```
+
+Arquivo `.env.local` (_na raiz do projeto_):
+
+```ini
+ADMIN_KEY=06a4c160a566121b223408d04441f46d3d38817ed8a3e5bc86684e01dc4cb150
+ADMIN_SALT=0ac2d08f9660ffc3a886b52ea858c11c
+```
+
+> É criado pelo _script_:
+
+```sh
+  echo "ADMIN_KEY=`openssl rand -hex 32`" > .env.local
+  echo "ADMIN_SALT=`openssl rand -hex 16`" >> .env.local
+```
+
+> Ambos arquivos são usados em `compose.yml`.
+
 
 ### Módulos
 
