@@ -8,7 +8,7 @@ psql -U "$POSTGRES_USER" <<-EOSQL
     ALTER ROLE pmdb WITH PASSWORD 'pmdb';
 EOSQL
 
-psql -U "pmdb" -d "pmbd" <<-EOSQL
+psql -U "pmdb" -d "pmdb" <<-EOSQL
     CREATE TABLE "public"."account" ( 
         "id" SERIAL,
         "name" VARCHAR UNIQUE NOT NULL,
