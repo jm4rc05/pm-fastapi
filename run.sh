@@ -9,8 +9,7 @@ function jwt() {
 function setup() {
     # Security
     # User
-    echo > .env.local
-    echo "ADMIN_KEY=`openssl rand -hex 32`" >> .env.local
+    echo "ADMIN_KEY=`openssl rand -hex 32`" > .env.local
     echo "ADMIN_SALT=`openssl rand -hex 16`" >> .env.local
 
     # Cleanup
@@ -32,6 +31,21 @@ function deploy() {
 
     # Deploy/test app
     sls app:deploy --stage local && export endpoint_app=`aws lambda create-function-url-config --function-name app-local-api --auth-type NONE | jq -r '.FunctionUrl'`
+}
+
+function admin() {
+    # Create admin user
+    docker exec postgres bash -c $"psql -U pmdb -d pmdb \
+        INSERT INTO public.account ( \
+            name, \
+            key, \
+            salt \
+        ) VALUES ( \
+            'admin', \
+            '$ADMIN_KEY', \
+            '$ADMIN_SALT' \
+        );"
+
 }
 
 function person() {
@@ -73,11 +87,13 @@ function main() {
 
     deploy
     
+    # admin
+
     person
     resource
 
-    printf '\n export authorization_token='$authorization_token
-    printf '\n export endpoint_app='${endpoint_app}
+    printf '\nexport authorization_token='$authorization_token
+    printf '\nexport endpoint_app='${endpoint_app}'\n'
 }
 
 main
