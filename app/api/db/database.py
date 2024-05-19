@@ -4,13 +4,13 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from decouple import config
 
-user = config('POSTGRES_USER')
-password = config('POSTGRES_PASSWORD')
-host = config('POSTGRES_HOST')
-port = config('POSTGRES_PORT')
-database = config('POSTGRES_DATABASE')
+postgres_user = config('POSTGRES_USER')
+postgres_password = config('POSTGRES_PASSWORD')
+postgres_host = config('POSTGRES_HOST')
+postgres_port = config('POSTGRES_PORT')
+postgres_database = config('POSTGRES_DATABASE')
 
-DATABASE_URL = f'postgresql+pg8000://{user}:{password}@{host}:{port}/{database}'
+DATABASE_URL = f'postgresql+pg8000://{postgres_user}:{postgres_password}@{postgres_host}:{postgres_port}/{postgres_database}'
 
 engine = create_engine(DATABASE_URL)
 

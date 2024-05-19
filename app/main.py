@@ -1,21 +1,34 @@
+import logging
 from fastapi import FastAPI, Request, Response
 from mangum import Mangum
 from ariadne.asgi import GraphQL
+from decouple import config
 from api.db.database import session_factory, Base, engine
 from api.middleware.authorization import AuthorizationMiddleware
 from api.resolvers import person, resource
-from api.security.authentication import is_authorized
 
+
+logger = logging.getLogger()
+logger.setLevel(config('LOG_LEVEL', default = 'INFO'))
 
 api = FastAPI()
 
 @api.on_event('startup')
-def startup():
+async def startup():
     Base.metadata.create_all(bind = engine)
 
 api.add_middleware(AuthorizationMiddleware)
 
-api.mount('/person/', GraphQL(person.schema(), debug = True))
-api.mount('/resource/', GraphQL(resource.schema(), debug = True))
+persons_app = GraphQL(person.schema(), debug = True)
+
+@api.post('/person/')
+async def person(request: Request):
+    return await persons_app.http_handler.graphql_http_server(request)
+
+resources_app = GraphQL(resource.schema(), debug = True)
+
+@api.post('/resource/')
+async def resource(request: Request):
+    return await resources_app.http_handler.graphql_http_server(request)
 
 handler = Mangum(api)

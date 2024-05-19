@@ -51,37 +51,37 @@ function admin() {
 
 function person() {
     # Unauthorized
-    curl -X POST ${endpoint_app}/person/ -H 'Content-Type: application/json' -d '{"query": "{ persons { name title } }"}'
-
+    curl -X POST ${endpoint_app}person/ -H 'Content-Type: application/json' -d '{"query": "{ persons { name title } }"}'
+    
     # Authorized
-    curl -X POST ${endpoint_app}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Carla\", title: \"PhD\") { name, title } }" }'
-
-    curl -X POST ${endpoint_app}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Pedro\", title: \"Undergraduate\") { name, title } }" }'
-
-    curl -X POST ${endpoint_app}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Zé\", title: \"Bocó\") { name, title } }" }'
-
-    curl -X POST ${endpoint_app}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "{ persons { name title } }"}'
-
-    curl -X POST ${endpoint_app}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { update(id: 1, name: \"Carla\", title: \"PhD Candidate\") { id, name, title } }" }'
-
-    curl -X POST ${endpoint_app}/person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { delete(id: 2) }" }'
-
-    curl -X POST ${endpoint_app}/person/ -H'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "{ persons { name title } }"}'
-}
+    curl -X POST ${endpoint_app}person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Carla\", title: \"PhD\") { name, title } }" }'
+    
+    curl -X POST ${endpoint_app}person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Pedro\", title: \"Undergraduate\") { name, title } }" }'
+    
+    curl -X POST ${endpoint_app}person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Zé\", title: \"Bocó\") { name, title } }" }'
+    
+    curl -X POST ${endpoint_app}person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "{ persons { name title } }"}'
+    
+    curl -X POST ${endpoint_app}person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { update(id: 1, name: \"Carla\", title: \"PhD Candidate\") { id, name, title } }" }'
+    
+    curl -X POST ${endpoint_app}person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { delete(id: 2) }" }'
+    
+    curl -X POST ${endpoint_app}person/ -H'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "{ persons { name title } }"}'
+    }
 
 function resource() {
     # Unauthorized
-    curl -X POST ${endpoint_app}/resource/ -H 'Content-Type: application/json' -d '{"query": "{ resources { name description } }"}'
-
+    curl -X POST ${endpoint_app}resource/ -H 'Content-Type: application/json' -d '{"query": "{ resources { name description } }"}'
+    
     # Authorized
-    curl -X POST ${endpoint_app}/resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Sala90\", description: \"Sala de 90 lugares\") { name, description } }" }'
-
-    curl -X POST ${endpoint_app}/resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Lab90\", description: \"Laboratório de 90 bancadas\") { name, description } }" }'
-
-    curl -X POST ${endpoint_app}/resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Aud90\", description: \"Auditório de 90 lugares\") { name, description } }" }'
-
-    curl -X POST ${endpoint_app}/resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "{ resources { name description } }"}'
-}
+    curl -X POST ${endpoint_app}resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Sala90\", description: \"Sala de 90 lugares\") { name, description } }" }'
+    
+    curl -X POST ${endpoint_app}resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Lab90\", description: \"Laboratório de 90 bancadas\") { name, description } }" }'
+    
+    curl -X POST ${endpoint_app}resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Aud90\", description: \"Auditório de 90 lugares\") { name, description } }" }'
+    
+    curl -X POST ${endpoint_app}resource/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "{ resources { name description } }"}'
+    }
 
 function main() {
     setup
@@ -96,11 +96,11 @@ function main() {
     # --------------------------------------------------------------- #
     # admin
 
-    person
-    resource
-
     printf '\nexport authorization_token='$authorization_token
     printf '\nexport endpoint_app='${endpoint_app}'\n'
+
+    person
+    resource
 }
 
 main
