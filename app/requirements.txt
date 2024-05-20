@@ -7,6 +7,7 @@ graphql-core==3.2.3; python_version >= '3.6' and python_version < '4'
 greenlet==3.0.3; platform_machine == 'aarch64' or (platform_machine == 'ppc64le' or (platform_machine == 'x86_64' or (platform_machine == 'amd64' or (platform_machine == 'AMD64' or (platform_machine == 'win32' or platform_machine == 'WIN32')))))
 idna==3.7; python_version >= '3.5'
 mangum==0.17.0; python_version >= '3.7'
+passlib==1.7.4
 pg8000==1.31.2; python_version >= '3.8'
 pydantic==1.10.15; python_version >= '3.7'
 pyjwt==2.8.0; python_version >= '3.7'

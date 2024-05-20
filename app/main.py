@@ -4,7 +4,7 @@ from mangum import Mangum
 from ariadne.asgi import GraphQL
 from decouple import config
 from api.db.database import session_factory, Base, engine
-from api.middleware.authorization import AuthorizationMiddleware
+from api.middleware.authorization import AuthorizationMiddleware, login
 from api.resolvers import person, resource
 
 
@@ -20,6 +20,10 @@ async def startup():
 api.add_middleware(AuthorizationMiddleware)
 
 persons_app = GraphQL(person.schema(), debug = True)
+
+@api.get('/token/')
+async def token(request: Request):
+    return login(request)
 
 @api.post('/person/')
 async def person(request: Request):
