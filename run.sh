@@ -15,6 +15,7 @@ function setup() {
 
     # Cleanup - recria os containers
     docker compose down --volumes
+    docker rmi app/api:latest
     docker compose up --detach
 }
 
