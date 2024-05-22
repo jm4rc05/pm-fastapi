@@ -1,0 +1,4 @@
+.serverless
+serverless.yml
+api.dockerfile
+README.md

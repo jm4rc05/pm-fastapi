@@ -1,22 +1,20 @@
 version: "3.8"
 
 services:
-  localstack:
-    container_name: localstack
-    image: localstack/localstack
-    privileged: true
-    ports:
-      - '4566:4566'
-      - '4510-4559:4510-4559'
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+  # localstack:
+  #   container_name: localstack
+  #   image: localstack/localstack
+  #   privileged: true
+  #   ports:
+  #     - '4566:4566'
+  #     - '4510-4559:4510-4559'
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
   postgres:
     container_name: postgres
     image: postgres:latest
     env_file:
-      - path: ./.env
-        required: true
-      - path: ./.env.local
+      - path: .env.local
         required: true
     restart: unless-stopped
     ports:
@@ -27,6 +25,11 @@ services:
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   redis:
     container_name: redis
     image: redis:alpine
@@ -39,3 +42,27 @@ services:
       REDIS_REPLICATION_MODE: master
       REDISCLI_AUTH: ${REDIS_PASSWORD}
     command: ["redis-server", "/usr/local/etc/redis/redis.conf", "--requirepass", "${REDIS_PASSWORD}", "--appendonly", "yes"]
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  app:
+    container_name: app
+    image: app/api:latest
+    env_file:
+      - path: app/.env
+        required: true
+      - path: .env.local
+        required: true
+    build:
+      context: .
+      dockerfile: app/api.dockerfile
+      target: apibase
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - '8000:8000'

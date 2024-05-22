@@ -4,14 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pyjwt = "*"
+pyjwt = {extras = ["crypto"], version = "*"}
 ariadne = "*"
 mangum = "*"
 fastapi = "==0.99.0"
 python-decouple = "*"
 sqlalchemy = "*"
 pg8000 = "*"
-passlib = "*"
+fastapi-logger = "*"
+passlib = {extras = ["bcrypt"], version = "*"}
 
 [dev-packages]
 pytest = "*"
