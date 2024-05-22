@@ -12,19 +12,19 @@ echo "SECRET_KEY="$SECRET_KEY >> .env.local
 
 function setup() {
     pipenv lock && pipenv requirements > requirements.txt
-     
+
     # Cleanup - recria os containers
     docker compose down --volumes
     docker compose up --detach
 }
 
 function login() {
-    export authorization_token=`curl --location 'localhost:8000/token/' --silent --header 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'username=admin' --data-urlencode 'password='$ADMIN_KEY | jq -r '.token'`
+    export authorization_token=`curl -X POST ${endpoint_app}token/ -s -H 'Content-Type: application/x-www-form-urlencoded' --data-urlencode 'username=admin' --data-urlencode 'password='$ADMIN_KEY | jq -r '.token'`
 }
 
 function person() {
     # Unauthorized
-    curl -X POST ${endpoint_app}person/ -H'Content-Type: application/json' -d '{"query": "{ persons { name title } }"}'
+    curl -X POST ${endpoint_app}person/ -H 'Content-Type: application/json' -d '{"query": "{ persons { name title } }"}'
 
     # Authorized
     curl -X POST ${endpoint_app}person/ -H 'Content-Type: application/json' -H 'Authorization: Bearer '${authorization_token} -d '{"query": "mutation { add(name: \"Carla\", title: \"PhD\") { name, title } }" }'
@@ -57,7 +57,7 @@ function resource() {
     }
 
 function main() {
-    # setup
+    setup
 
     login
 
