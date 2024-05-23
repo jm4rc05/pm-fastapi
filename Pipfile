@@ -6,18 +6,18 @@ name = "pypi"
 [packages]
 pyjwt = {extras = ["crypto"], version = "*"}
 ariadne = "*"
-mangum = "*"
 fastapi = "==0.99.0"
 python-decouple = "*"
 sqlalchemy = "*"
 pg8000 = "*"
 fastapi-logger = "*"
 passlib = {extras = ["bcrypt"], version = "*"}
+uvicorn = "*"
+python-multipart = "*"
 
 [dev-packages]
 pytest = "*"
 requests = "*"
-uvicorn = "*"
 
 [requires]
 python_version = "3.11"

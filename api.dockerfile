@@ -11,4 +11,4 @@ RUN pip install --no-cache-dir --upgrade -r /var/task/requirements.txt
 COPY app /var/task
 COPY app/.env /var/task
 
-CMD ["uvicorn", "main:api", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "main.py"]

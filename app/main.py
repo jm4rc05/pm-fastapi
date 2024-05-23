@@ -1,7 +1,7 @@
 import logging
 from fastapi import FastAPI, Request, Response, Depends, HTTPException, status
-from fastapi_logger.logger import log_request
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_logger.logger import log_request
 from typing import Annotated
 from datetime import datetime, timedelta, timezone
 from ariadne.asgi import GraphQL
@@ -37,14 +37,18 @@ async def login(data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
 
 persons_app = GraphQL(person.schema(), debug = True)
 
-@api.post('/person/')
+@api.post('/person')
 @log_request
 async def person(request: Request, user: Annotated[Account, Depends(user)]):
     return await persons_app.http_handler.graphql_http_server(request)
 
 resources_app = GraphQL(resource.schema(), debug = True)
 
-@api.post('/resource/')
+@api.post('/resource')
 @log_request
 async def resource(request: Request, user: Annotated[Account, Depends(user)]):
     return await resources_app.http_handler.graphql_http_server(request)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run('main:api', host = '0.0.0.0', port = 8000, reload = True)
