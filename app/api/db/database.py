@@ -3,6 +3,10 @@ from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from decouple import config
+from dotenv import load_dotenv
+
+
+load_dotenv('.env.local')
 
 postgres_user = config('POSTGRES_USER')
 postgres_password = config('POSTGRES_PASSWORD')

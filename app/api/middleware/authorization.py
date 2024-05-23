@@ -5,12 +5,15 @@ from fastapi import Request, Response, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 from decouple import config
+from dotenv import load_dotenv
 from passlib.context import CryptContext
 from passlib.exc import UnknownHashError
 from starlette.middleware.base import BaseHTTPMiddleware
 from api.db.database import session_factory
 from api.db.models.account import Account, Token, TokenData
 
+
+load_dotenv('.env.local')
 
 SECRET_KEY = config('SECRET_KEY')
 

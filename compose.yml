@@ -42,8 +42,6 @@ services:
     container_name: app
     image: app/api:latest
     env_file:
-      - path: app/.env
-        required: true
       - path: .env.local
         required: true
     build:
