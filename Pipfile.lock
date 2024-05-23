@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7e8d8c8facf67bca323c52b65ca41279bead95c3ca4fef11e078d25d35518bb5"
+            "sha256": "180a97d3e5ed6ef16a4f2742e2d461cf3f593e5f4b2cb6dc9c41701bc6fd9fb2"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -183,13 +183,13 @@
             "markers": "python_version >= '3.7'",
             "version": "==0.99.0"
         },
-        "fastapi-logger": {
+        "fastapi-route-logger-middleware": {
             "hashes": [
-                "sha256:b7bda8d4eb193f81c38dc66c0a770176a9a905add661c82d23bca665927b126a",
-                "sha256:d99bdb83dc41ad038d4fadb882165aba862d7fd7035cb3896a10471194e7dfe4"
+                "sha256:d6d4db9db5156cd7842e22070398f0c98f91bd2ad7340c1ec74c2bff0f72637f"
             ],
             "index": "pypi",
-            "version": "==0.2"
+            "markers": "python_version >= '3.7'",
+            "version": "==0.2.3"
         },
         "graphql-core": {
             "hashes": [

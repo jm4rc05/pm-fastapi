@@ -10,9 +10,9 @@
             "request": "launch",
             "program": "main.py",
             "cwd": "${workspaceFolder}/app",
+            "envFile": "${workspaceFolder}/.env.local",
             "env": {
                 "PYTHONPATH": "${cwd}",
-                "SECRET_KEY": "bda702c8147a5987fafbac968fe15097",
             },
         }, 
 

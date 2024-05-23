@@ -10,11 +10,11 @@ fastapi = "==0.99.0"
 python-decouple = "*"
 sqlalchemy = "*"
 pg8000 = "*"
-fastapi-logger = "*"
 passlib = {extras = ["bcrypt"], version = "*"}
 uvicorn = "*"
 python-multipart = "*"
 python-dotenv = "*"
+fastapi-route-logger-middleware = "*"
 
 [dev-packages]
 pytest = "*"
