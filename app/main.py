@@ -1,28 +1,35 @@
 import os, logging.config
 from fastapi import FastAPI, Request, Response, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from fastapi_route_logger_middleware import RouteLoggerMiddleware
 from typing import Annotated
 from datetime import datetime, timedelta, timezone
 from ariadne.asgi import GraphQL
+from sqladmin import Admin
 from decouple import config
 from dotenv import load_dotenv
 from api.db.database import session_factory, Base, engine
-from api.db.models.account import Account, Token
+from api.db.models.account import Account, AccountAdmin, Token
 from api.middleware.authorization import user, token, authenticate
 from api.resolvers import person, resource
 
 
 load_dotenv('.env.local')
 
-api = FastAPI()
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    Base.metadata.create_all(bind = engine)
+
+    yield
+
+api = FastAPI(lifespan = lifespan)
+admin = Admin(api, engine)
+admin.add_view(AccountAdmin)
 
 logging.config.fileConfig(f'{os.path.dirname(os.path.realpath(__file__))}/logging.conf')
 api.add_middleware(RouteLoggerMiddleware)
-
-@api.on_event('startup')
-async def startup():
-    Base.metadata.create_all(bind = engine)
 
 @api.post('/token')
 async def login(data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
@@ -34,7 +41,7 @@ async def login(data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
             headers={'WWW-Authenticate': 'Bearer'},
         )
     else:
-        access = token(data = { 'sub': account.name }, delta = timedelta(minutes = 30))
+        access = token(data = { 'sub': account.name }, delta = timedelta(minutes = config('API_TOKEN_DURATION', cast = int)))
 
     return Token(token = access, type = 'bearer')
 
@@ -52,4 +59,4 @@ async def resource(request: Request, user: Annotated[Account, Depends(user)]):
 
 if __name__ == '__main__':
     from uvicorn import run
-    run('main:api', host = '0.0.0.0', port = config('PORT', cast = int), reload = config('RELOAD', cast = bool))
+    run('main:api', host = '0.0.0.0', port = config('API_PORT', cast = int), reload = config('API_RELOAD', cast = bool))
