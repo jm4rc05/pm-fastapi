@@ -49,6 +49,6 @@ resources_app = GraphQL(resource.schema(), debug = True)
 async def resource(request: Request, user: Annotated[Account, Depends(user)]):
     return await resources_app.http_handler.graphql_http_server(request)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     import uvicorn
     uvicorn.run('main:api', host = '0.0.0.0', port = 8000, reload = True)

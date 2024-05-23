@@ -27,6 +27,31 @@ async def add(_, __, name, description):
 
         return _resource
 
+@mutation.field('update')
+def update(_, __, id, name = None, description = None):
+    with session_factory() as db:
+        _resource = db.query(Resource).filter(Resource.id == id).first()
+        if _resource:
+            if name:
+                _resource.name = name
+            if description:
+                _resource.description = description
+            db.commit()
+            db.refresh(_resource)
+        
+        return _resource
+
+@mutation.field('delete')
+def delete(_, __, id):
+    with session_factory() as db:
+        _resource = db.query(Resource).filter(Resource.id == id).first()
+        if _resource:
+            db.delete(_resource)
+            db.commit()
+            return True
+        
+        return False
+
 def schema() -> GraphQLSchema:
     load_path = 'api/types/resource.graphql'
     defs = load_schema_from_path(load_path)

@@ -6,7 +6,7 @@ type Resource {
 
 type Query{
     resource(id: Int!): Resource,
-    resources: [Resource]
+    resources: [Resource!]!
 }
 
 type Mutation {

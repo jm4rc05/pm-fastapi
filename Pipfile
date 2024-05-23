@@ -14,6 +14,7 @@ fastapi-logger = "*"
 passlib = {extras = ["bcrypt"], version = "*"}
 uvicorn = "*"
 python-multipart = "*"
+python-dotenv = "*"
 
 [dev-packages]
 pytest = "*"
