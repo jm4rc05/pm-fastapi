@@ -1,5 +1,6 @@
-import requests
+import pytest, requests
 from pytest import fixture
+from time import sleep
 from decouple import config
 from dotenv import load_dotenv
 
@@ -98,3 +99,19 @@ def test_list_resources(get_token):
     )
     print(response.json())
     assert response.status_code == 200
+
+@pytest.mark.order('last')
+def test_token_duration(get_token):
+    token = get_token
+    header = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {token}',
+    }
+    sleep((config('API_TOKEN_DURATION', cast = int) + 1) * 60)
+    response = requests.post(
+        SERVICE_URL, 
+        headers = header, 
+        json = { 'query': '{ persons { name title } }' }
+    )
+    print(response.json())
+    assert response.status_code == 401
