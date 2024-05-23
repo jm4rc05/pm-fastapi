@@ -6,19 +6,21 @@ name = "pypi"
 [packages]
 pyjwt = {extras = ["crypto"], version = "*"}
 ariadne = "*"
-fastapi = "==0.99.0"
 python-decouple = "*"
 sqlalchemy = "*"
-pg8000 = "*"
 passlib = {extras = ["bcrypt"], version = "*"}
 uvicorn = "*"
 python-multipart = "*"
 python-dotenv = "*"
 fastapi-route-logger-middleware = "*"
+fastapi = "*"
+sqladmin = "*"
+psycopg = {extras = ["binary"], version = "*"}
 
 [dev-packages]
 pytest = "*"
 requests = "*"
+pytest-order = "*"
 
 [requires]
 python_version = "3.11"
