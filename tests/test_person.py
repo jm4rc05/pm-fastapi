@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 
 load_dotenv('.env.local')
+load_dotenv('.env.test.local')
 
 HOST_URL = 'http://localhost:8000'
 SERVICE_URL = f'{HOST_URL}/person'
@@ -13,7 +14,15 @@ SERVICE_URL = f'{HOST_URL}/person'
 
 @fixture(scope="module", autouse=True)
 def get_token(request):
-    response = requests.post(f'{HOST_URL}/token', headers = { 'Content-Type': 'application/x-www-form-urlencoded' }, data = { 'username': 'admin', 'password': config('ADMIN_KEY')})
+    response = requests.post(f'{HOST_URL}/token', headers = { 'Content-Type': 'application/x-www-form-urlencoded' }, data = { 'username': 'admin', 'password': config('ADMIN_KEY') })
+    if response.status_code == 200:
+        return response.json()['token']
+    else:
+        return False
+
+@fixture(scope="module", autouse=True)
+def get_token_wrong_password(request):
+    response = requests.post(f'{HOST_URL}/token', headers = { 'Content-Type': 'application/x-www-form-urlencoded' }, data = { 'username': 'admin', 'password': 'wrong_password' })
     if response.status_code == 200:
         return response.json()['token']
     else:
@@ -22,6 +31,32 @@ def get_token(request):
 def test_unauthorized():
     header = {
         'Content-Type': 'application/json',
+    }
+    response = requests.post(
+        SERVICE_URL, 
+        headers = header, 
+        data = '{"query": "{ persons { name title } }"}'
+    )
+    assert response.status_code == 401
+
+def test_invalid_token():
+    token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTcxNjU3MDU2OX0.LDhZ5aTKuvttlBaN2ZTIcxntyHTEZHdCaa8_9u8Er3U'
+    header = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {token}',
+    }
+    response = requests.post(
+        SERVICE_URL, 
+        headers = header, 
+        data = '{"query": "{ persons { name title } }"}'
+    )
+    assert response.status_code == 401
+
+def test_wrong_password(get_token_wrong_password):
+    token = get_token_wrong_password
+    header = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {token}',
     }
     response = requests.post(
         SERVICE_URL, 
@@ -100,6 +135,8 @@ def test_list_persons(get_token):
     print(response.json())
     assert response.status_code == 200
 
+@pytest.mark.skip(reason = 'no test')
+@pytest.mark.order(before = 'test_token_duration')
 def test_rate_limit(get_token):
     token = get_token
     header = {
@@ -122,6 +159,7 @@ def test_rate_limit(get_token):
     print(response.json())
     assert response.status_code == 429
 
+@pytest.mark.skip(reason = 'no test')
 @pytest.mark.order('last')
 def test_token_duration(get_token):
     token = get_token

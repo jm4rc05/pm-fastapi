@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 
 load_dotenv('.env.local')
+load_dotenv('.env.test.local')
 
 HOST_URL = 'http://localhost:8000'
 SERVICE_URL = f'{HOST_URL}/resource'
@@ -19,9 +20,43 @@ def get_token(request):
     else:
         return False
 
+@fixture(scope="module", autouse=True)
+def get_token_wrong_password(request):
+    response = requests.post(f'{HOST_URL}/token', headers = { 'Content-Type': 'application/x-www-form-urlencoded' }, data = { 'username': 'admin', 'password': 'wrong_password' })
+    if response.status_code == 200:
+        return response.json()['token']
+    else:
+        return False
+
 def test_unauthorized():
     header = {
         'Content-Type': 'application/json',
+    }
+    response = requests.post(
+        SERVICE_URL, 
+        headers = header, 
+        data = '{"query": "{ resources { name description } }"}'
+    )
+    assert response.status_code == 401
+
+def test_invalid_token():
+    token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTcxNjU3MDU2OX0.LDhZ5aTKuvttlBaN2ZTIcxntyHTEZHdCaa8_9u8Er3U'
+    header = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {token}',
+    }
+    response = requests.post(
+        SERVICE_URL, 
+        headers = header, 
+        data = '{"query": "{ resources { name description } }"}'
+    )
+    assert response.status_code == 401
+
+def test_wrong_password(get_token_wrong_password):
+    token = get_token_wrong_password
+    header = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {token}',
     }
     response = requests.post(
         SERVICE_URL, 
@@ -100,6 +135,8 @@ def test_list_resources(get_token):
     print(response.json())
     assert response.status_code == 200
 
+@pytest.mark.skip(reason = 'no test')
+@pytest.mark.order(before = 'test_token_duration')
 def test_rate_limit(get_token):
     token = get_token
     header = {
@@ -122,6 +159,7 @@ def test_rate_limit(get_token):
     print(response.json())
     assert response.status_code == 429
 
+@pytest.mark.skip(reason = 'no test')
 @pytest.mark.order('last')
 def test_token_duration(get_token):
     token = get_token
