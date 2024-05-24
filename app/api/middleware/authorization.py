@@ -24,12 +24,11 @@ context = CryptContext(schemes = ['sha256_crypt'])
 oauth2 = OAuth2PasswordBearer(tokenUrl = 'token')
 
 
-def authenticate(username: str, password: str):
-    db = session_factory()
-    with db as db:
+def authenticate(username: str, password: str) -> Account:
+    with session_factory() as db:
         account = db.query(Account).filter(Account.name == username).first()
         try:
-            if not account or not context.verify(password + account.salt, account.key):
+            if account and context.verify(password, account.key):
                 return account
             else:
                 raise HTTPException(
@@ -66,13 +65,7 @@ def user(data: Annotated[str, Depends(oauth2)]):
         username: str = payload.get('sub')
         if username is None:
             raise error
-        token = TokenData(username = username)
+
+        return { 'username': username }
     except jwt.InvalidTokenError:
         raise error
-    db = session_factory()
-    with db as db:
-        account = db.query(Account).filter(Account.name == username).first()
-        if account is None:
-            raise error
-
-        return account
