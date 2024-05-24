@@ -9,14 +9,12 @@ mutation = MutationType()
 
 @query.field('person')
 def person(_, id):
-    db = session_factory()
-    with db as db:
+    with session_factory() as db:
         return db.query(Person).filter(Person.id == id).first()
 
 @query.field('persons')
 def persons(*_):
-    db = session_factory()
-    with db as db:
+    with session_factory() as db:
         return db.query(Person).all()
 
 @mutation.field('add')
