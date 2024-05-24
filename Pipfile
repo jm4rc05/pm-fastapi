@@ -16,6 +16,8 @@ fastapi-route-logger-middleware = "*"
 fastapi = "*"
 sqladmin = "*"
 psycopg = {extras = ["binary"], version = "*"}
+fastapi-limiter = "*"
+redis = "*"
 
 [dev-packages]
 pytest = "*"

@@ -8,13 +8,13 @@ from dotenv import load_dotenv
 
 load_dotenv('.env.local')
 
-postgres_user = config('POSTGRES_USER')
-postgres_password = config('POSTGRES_PASSWORD')
-postgres_host = config('POSTGRES_HOST')
-postgres_port = config('POSTGRES_PORT')
-postgres_database = config('POSTGRES_DATABASE')
+POSTGRES_USER = config('POSTGRES_USER')
+POSTGRES_PASSWORD = config('POSTGRES_PASSWORD')
+POSTGRES_HOST = config('POSTGRES_HOST')
+POSTGRES_PORT = config('POSTGRES_PORT')
+POSTGRES_DATABASE = config('POSTGRES_DATABASE')
 
-DATABASE_URL = f'postgresql+psycopg://{postgres_user}:{postgres_password}@{postgres_host}:{postgres_port}/{postgres_database}'
+DATABASE_URL = f'postgresql+psycopg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE}'
 
 engine = create_engine(DATABASE_URL)
 

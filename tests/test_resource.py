@@ -26,7 +26,7 @@ def test_unauthorized():
     response = requests.post(
         SERVICE_URL, 
         headers = header, 
-        data = '{"query": "{ persons { name title } }"}'
+        data = '{"query": "{ resources { name description } }"}'
     )
     assert response.status_code == 401
 
@@ -100,6 +100,28 @@ def test_list_resources(get_token):
     print(response.json())
     assert response.status_code == 200
 
+def test_rate_limit(get_token):
+    token = get_token
+    header = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {token}',
+    }
+    for _ in range(1, config('API_LIMITER_RATE', cast = int)):
+        response = requests.post(
+            SERVICE_URL, 
+            headers = header, 
+            json = { 'query': '{ resources { name description } }' }
+        )
+        print(response.json())
+        assert response.status_code == 200 or 429
+    response = requests.post(
+        SERVICE_URL, 
+        headers = header, 
+        json = { 'query': '{ resources { name description } }' }
+    )
+    print(response.json())
+    assert response.status_code == 429
+
 @pytest.mark.order('last')
 def test_token_duration(get_token):
     token = get_token
@@ -111,7 +133,7 @@ def test_token_duration(get_token):
     response = requests.post(
         SERVICE_URL, 
         headers = header, 
-        json = { 'query': '{ persons { name title } }' }
+        json = { 'query': '{ resources { name description } }' }
     )
     print(response.json())
     assert response.status_code == 401
