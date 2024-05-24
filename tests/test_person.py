@@ -135,7 +135,6 @@ def test_list_persons(get_token):
     print(response.json())
     assert response.status_code == 200
 
-@pytest.mark.skip(reason = 'no test')
 @pytest.mark.order(before = 'test_token_duration')
 def test_rate_limit(get_token):
     token = get_token
@@ -159,7 +158,6 @@ def test_rate_limit(get_token):
     print(response.json())
     assert response.status_code == 429
 
-@pytest.mark.skip(reason = 'no test')
 @pytest.mark.order('last')
 def test_token_duration(get_token):
     token = get_token
