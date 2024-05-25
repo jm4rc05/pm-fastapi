@@ -10,7 +10,6 @@ from contextlib import asynccontextmanager
 from typing import Annotated
 from datetime import datetime, timedelta, timezone
 from math import ceil
-from ariadne.asgi import GraphQL
 from sqladmin import Admin
 from decouple import config
 from dotenv import load_dotenv
@@ -21,16 +20,16 @@ from api.middleware.authorization import user, token, authenticate
 from api.resolvers import person
 
 
+load_dotenv('.env.local')
+
 logging.config.fileConfig(f'{ROOT_DIR}/logging.conf')
 logger = logging.getLogger()
-
-load_dotenv('.env.local')
 
 API_PORT = config('API_PORT', cast = int, default = 8000)
 API_RELOAD = config('API_RELOAD', cast = bool, default = True)
 API_LIMITER_RATE = config('API_LIMITER_RATE', cast = int, default = 2)
 API_LIMITER_TIME = config('API_LIMITER_TIME', cast = int, default = 5)
-API_TOKEN_DURATION = config('API_TOKEN_DURATION', cast = int, default = 30)
+API_TOKEN_DURATION = config('API_TOKEN_DURATION', cast = int, default = 60)
 
 REDIS_PASSWORD = config('REDIS_PASSWORD')
 REDIS_HOST = config('REDIS_HOST', default = 'localhost')
@@ -87,11 +86,9 @@ async def login(response: Response, data: Annotated[OAuth2PasswordRequestForm, D
 
     return Token(token = access, type = 'bearer')
 
-persons_app = GraphQL(person.schema(), logger = logging.Logger, debug = True)
-
 @api.post('/person', dependencies = [Depends(RateLimiter(times = API_LIMITER_RATE, seconds = API_LIMITER_TIME))])
-async def person(request: Request, user: Annotated[Account, Depends(user)]):
-    return await persons_app.http_handler.graphql_http_server(request)
+async def get_person(request: Request, user: Annotated[Account, Depends(user)]):
+    return await person.serve(request)
 
 if __name__ == '__main__':
     from uvicorn import run
