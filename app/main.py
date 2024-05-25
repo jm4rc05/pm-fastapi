@@ -1,14 +1,15 @@
 import os, logging, logging.config
+import redis.asyncio as redis
 from fastapi import FastAPI, Request, Response, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-import redis.asyncio as redis
-from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
 from fastapi_route_logger_middleware import RouteLoggerMiddleware
 from fastapi_limiter import FastAPILimiter
 from fastapi_limiter.depends import RateLimiter
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from typing import Annotated
 from datetime import datetime, timedelta, timezone
+from math import ceil
 from ariadne.asgi import GraphQL
 from sqladmin import Admin
 from decouple import config
@@ -37,6 +38,15 @@ REDIS_PORT= config('REDIS_PORT', cast = int, default = 6379)
 REDIS_DATABASE = config('REDIS_DATABASE', cast = int, default = 0)
 REDIS_PREFIX = config('REDIS_PREFIX', default = 'pm')
 
+async def expiration(request: Request, response: Response, pexpire: int):
+    expire = ceil(pexpire / 1000)
+
+    raise HTTPException(
+        status.HTTP_429_TOO_MANY_REQUESTS,
+        'Too Many Requests', 
+        headers = { 'Retry-After': str(expire) }
+    )
+
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     Base.metadata.create_all(bind = engine)
@@ -47,7 +57,11 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         password = REDIS_PASSWORD, 
         db = REDIS_DATABASE
     )
-    await FastAPILimiter.init(redis_connection, prefix = REDIS_PREFIX)
+    await FastAPILimiter.init(
+        redis_connection, 
+        prefix = REDIS_PREFIX, 
+        http_callback = expiration
+    )
 
     yield
 
@@ -60,7 +74,7 @@ admin.add_view(AccountAdmin)
 api.add_middleware(RouteLoggerMiddleware)
 
 @api.post('/token', dependencies=[Depends(RateLimiter(times = API_LIMITER_RATE, seconds = API_LIMITER_TIME))])
-async def login(data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
+async def login(response: Response, data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
     account = authenticate(data.username, data.password)
     if account is None:
         raise HTTPException(
@@ -81,4 +95,10 @@ async def person(request: Request, user: Annotated[Account, Depends(user)]):
 
 if __name__ == '__main__':
     from uvicorn import run
-    run('main:api', host = '0.0.0.0', port = API_PORT, reload = API_RELOAD)
+    run(
+        'main:api', 
+        server_header = False, 
+        host = '0.0.0.0', 
+        port = API_PORT, 
+        reload = API_RELOAD
+    )
