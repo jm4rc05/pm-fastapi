@@ -31,6 +31,8 @@ Base = declarative_base()
 def session_factory():
     db = SessionLocal()
     try:
+        logger.info(f'Session to postgres at {POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE} created')
         yield db
     finally:
+        logger.info(f'Session to postgres at {POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE} closed')
         db.close()

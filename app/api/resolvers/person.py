@@ -29,6 +29,7 @@ def add(_, __, name, title):
         db.add(_person)
         db.commit()
         db.refresh(_person)
+        logger.info(f'Added {__name__} {name}')
     
     return _person
 
@@ -43,6 +44,7 @@ def update(_, __, id, name = None, title = None):
                 _person.title = title
             db.commit()
             db.refresh(_person)
+            logger.info(f'Updated {__name__} {name}')
         
         return _person
 
@@ -53,6 +55,7 @@ def delete(_, __, id):
         if _person:
             db.delete(_person)
             db.commit()
+            logger.info(f'Deleted {__name__} {_person.name}')
             return True
         
         return False

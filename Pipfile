@@ -4,18 +4,18 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pyjwt = {extras = ["crypto"], version = "*"}
+pyjwt = {extras = ["crypto"] }
 ariadne = "*"
 python-decouple = "*"
 sqlalchemy = "*"
-passlib = {extras = ["bcrypt"], version = "*"}
+passlib = {extras = ["bcrypt"] }
 uvicorn = "*"
 python-multipart = "*"
 python-dotenv = "*"
 fastapi-route-logger-middleware = "*"
 fastapi = "*"
 sqladmin = "*"
-psycopg = {extras = ["binary"], version = "*"}
+psycopg = {extras = ["binary"] }
 fastapi-limiter = "*"
 redis = "*"
 

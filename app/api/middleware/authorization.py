@@ -32,14 +32,17 @@ def authenticate(username: str, password: str) -> Account:
         account = db.query(Account).filter(Account.name == username).first()
         try:
             if account and context.verify(password, account.key):
+                logger.info(f'Authenticated user {username}')
                 return account
             else:
+                logger.info(f'Invalid credentials for user {username}')
                 raise HTTPException(
                     status_code = status.HTTP_401_UNAUTHORIZED, 
                     detail = 'Invalid credentials', 
                     headers = { 'WWW-Authenticate': 'Bearer' }
                 )
         except UnknownHashError:
+            logger.info(f'Error validating credentials for user {username}')
             raise HTTPException(
                 status_code = status.HTTP_401_UNAUTHORIZED, 
                 detail = 'Could not validate credentials', 
@@ -67,8 +70,10 @@ def user(data: Annotated[str, Depends(oauth2)]):
         payload = jwt.decode(data, SECRET_KEY, algorithms = ['HS256'])
         username: str = payload.get('sub')
         if username is None:
+            logger.info('Username not informed')
             raise error
 
         return { 'username': username }
     except jwt.InvalidTokenError:
+        logger.info('Invalid token provided')
         raise error

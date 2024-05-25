@@ -1,4 +1,4 @@
-import pytest, requests
+import pytest, requests, pprint
 from pytest import fixture
 from time import sleep
 from decouple import config
@@ -148,14 +148,13 @@ def test_rate_limit(get_token):
             headers = header, 
             json = { 'query': '{ persons { name title } }' }
         )
-        print(response.json())
         assert response.status_code == 200 or 429
     response = requests.post(
         SERVICE_URL, 
         headers = header, 
         json = { 'query': '{ persons { name title } }' }
     )
-    print(response.json())
+    pprint.PrettyPrinter(indent = 2).pprint(dict(response.headers))
     assert response.status_code == 429
 
 @pytest.mark.order('last')
