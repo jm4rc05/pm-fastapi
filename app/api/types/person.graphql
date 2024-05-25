@@ -1,3 +1,5 @@
+directive @cost(complexity: Int, multipliers: [String!], useMultipliers: Boolean) on FIELD | FIELD_DEFINITION
+
 type Person {
     id: Int!
     name: String!

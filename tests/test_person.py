@@ -135,6 +135,22 @@ def test_list_persons(get_token):
     print(response.json())
     assert response.status_code == 200
 
+@pytest.mark.skip
+def test_cost(get_token):
+    token = get_token
+    header = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {token}',
+    }
+    response = requests.post(
+        SERVICE_URL, 
+        headers = header, 
+        json = { 'query': '{ persons { name title } }' }
+    )
+    print(response.json())
+    assert response.status_code == 429
+    
+@pytest.mark.skip
 @pytest.mark.order(before = 'test_token_duration')
 def test_rate_limit(get_token):
     token = get_token
