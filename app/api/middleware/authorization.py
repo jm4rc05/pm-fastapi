@@ -17,8 +17,7 @@ load_dotenv('.env.local')
 
 SECRET_KEY = config('SECRET_KEY')
 
-logger = logging.getLogger()
-logger.setLevel(config('LOG_LEVEL', default = 'INFO'))
+logging.config.fileConfig(f'{os.path.dirname(os.path.realpath(__file__))}/logging.conf')
 
 context = CryptContext(schemes = ['sha256_crypt'])
 oauth2 = OAuth2PasswordBearer(tokenUrl = 'token')

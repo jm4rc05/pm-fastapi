@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 from api.db.database import session_factory, Base, engine
 from api.db.models.account import Account, AccountAdmin, Token
 from api.middleware.authorization import user, token, authenticate
-from api.resolvers import person, resource
+from api.resolvers import person
 
 
 load_dotenv('.env.local')
@@ -54,6 +54,7 @@ admin = Admin(api, engine)
 admin.add_view(AccountAdmin)
 
 logging.config.fileConfig(f'{os.path.dirname(os.path.realpath(__file__))}/logging.conf')
+
 api.add_middleware(RouteLoggerMiddleware)
 
 @api.post('/token', dependencies=[Depends(RateLimiter(times = API_LIMITER_RATE, seconds = API_LIMITER_TIME))])
@@ -70,17 +71,11 @@ async def login(data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
 
     return Token(token = access, type = 'bearer')
 
-persons_app = GraphQL(person.schema(), debug = True)
+persons_app = GraphQL(person.schema(), logger = logging.Logger, debug = True)
 
 @api.post('/person', dependencies = [Depends(RateLimiter(times = API_LIMITER_RATE, seconds = API_LIMITER_TIME))])
 async def person(request: Request, user: Annotated[Account, Depends(user)]):
     return await persons_app.http_handler.graphql_http_server(request)
-
-resources_app = GraphQL(resource.schema(), debug = True)
-
-@api.post('/resource', dependencies = [Depends(RateLimiter(times = API_LIMITER_RATE, seconds = API_LIMITER_TIME))])
-async def resource(request: Request, user: Annotated[Account, Depends(user)]):
-    return await resources_app.http_handler.graphql_http_server(request)
 
 if __name__ == '__main__':
     from uvicorn import run
