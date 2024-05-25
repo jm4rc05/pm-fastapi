@@ -1,4 +1,4 @@
-import os, logging.config
+import os, logging, logging.config
 from fastapi import FastAPI, Request, Response, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 import redis.asyncio as redis
@@ -13,11 +13,15 @@ from ariadne.asgi import GraphQL
 from sqladmin import Admin
 from decouple import config
 from dotenv import load_dotenv
+from constants import ROOT_DIR
 from api.db.database import session_factory, Base, engine
 from api.db.models.account import Account, AccountAdmin, Token
 from api.middleware.authorization import user, token, authenticate
 from api.resolvers import person
 
+
+logging.config.fileConfig(f'{ROOT_DIR}/logging.conf')
+logger = logging.getLogger()
 
 load_dotenv('.env.local')
 
@@ -53,8 +57,6 @@ api = FastAPI(lifespan = lifespan)
 admin = Admin(api, engine)
 admin.add_view(AccountAdmin)
 
-logging.config.fileConfig(f'{os.path.dirname(os.path.realpath(__file__))}/logging.conf')
-
 api.add_middleware(RouteLoggerMiddleware)
 
 @api.post('/token', dependencies=[Depends(RateLimiter(times = API_LIMITER_RATE, seconds = API_LIMITER_TIME))])
@@ -67,7 +69,7 @@ async def login(data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
             headers={'WWW-Authenticate': 'Bearer'},
         )
     else:
-        access = token(data = { 'sub': account.name }, delta = timedelta(minutes = API_TOKEN_DURATION))
+        access = token(data = { 'sub': account.name }, delta = timedelta(seconds = API_TOKEN_DURATION))
 
     return Token(token = access, type = 'bearer')
 

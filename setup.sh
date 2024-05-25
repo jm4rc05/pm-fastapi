@@ -11,6 +11,8 @@ function main() {
     docker compose down --volumes
     docker rmi app/api:latest
     docker compose up --detach
+
+    docker logs app --follow
 }
 
 main

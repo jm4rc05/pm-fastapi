@@ -166,8 +166,7 @@ def test_token_duration(get_token):
         'Authorization': f'Bearer {token}',
     }
     snooze = config('API_TOKEN_DURATION', cast = int) + 1
-    print(f'Snoozing: {snooze}')
-    sleep(snooze * 60)
+    sleep(snooze)
     response = requests.post(
         SERVICE_URL, 
         headers = header, 

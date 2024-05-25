@@ -1,8 +1,13 @@
+import os, logging, logging.config
 from ariadne import load_schema_from_path, QueryType, MutationType, make_executable_schema
 from graphql import GraphQLSchema
 from api.db.database import session_factory
 from api.db.models.person import Person
+from constants import ROOT_DIR
 
+
+logging.config.fileConfig(f'{ROOT_DIR}/logging.conf')
+logger = logging.getLogger()
 
 query = QueryType()
 mutation = MutationType()

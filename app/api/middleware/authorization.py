@@ -1,4 +1,4 @@
-import jwt, hashlib, logging
+import os, logging, logging.config, jwt, hashlib
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Union
 from fastapi import Request, Response, Depends, HTTPException, status
@@ -11,13 +11,17 @@ from passlib.exc import UnknownHashError
 from starlette.middleware.base import BaseHTTPMiddleware
 from api.db.database import session_factory
 from api.db.models.account import Account, Token, TokenData
+from constants import ROOT_DIR
 
+
+logging.config.fileConfig(f'{ROOT_DIR}/logging.conf')
+logger = logging.getLogger()
 
 load_dotenv('.env.local')
 
 SECRET_KEY = config('SECRET_KEY')
-
-logging.config.fileConfig(f'{os.path.dirname(os.path.realpath(__file__))}/logging.conf')
+API_TOKEN_DURATION = config('API_TOKEN_DURATION', cast = int, default = 60)
+logger.info(f'Token duration: {API_TOKEN_DURATION}')
 
 context = CryptContext(schemes = ['sha256_crypt'])
 oauth2 = OAuth2PasswordBearer(tokenUrl = 'token')
@@ -48,7 +52,7 @@ def token(data: dict, delta: Union[timedelta, None] = None):
     if delta:
         expiration = datetime.now(timezone.utc) + delta
     else:
-        expiration = datetime.now(timezone.utc) + timedelta(minutes = 15)
+        expiration = datetime.now(timezone.utc) + timedelta(seconds = API_TOKEN_DURATION)
     payload.update({ 'exp': expiration })
 
     return jwt.encode(payload, SECRET_KEY, algorithm = 'HS256')

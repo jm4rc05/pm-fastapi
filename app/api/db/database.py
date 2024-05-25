@@ -1,10 +1,15 @@
+import os, logging, logging.config
 from contextlib import contextmanager
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from decouple import config
 from dotenv import load_dotenv
+from constants import ROOT_DIR
 
+
+logging.config.fileConfig(f'{ROOT_DIR}/logging.conf')
+logger = logging.getLogger()
 
 load_dotenv('.env.local')
 

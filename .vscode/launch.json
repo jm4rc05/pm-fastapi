@@ -8,9 +8,9 @@
             "name": "Python: app/main.py",
             "type": "python",
             "request": "launch",
-            "program": "main.py",
+            "program": "${file}",
             "cwd": "${workspaceFolder}/app",
-            "envFile": "${workspaceFolder}/.env.local",
+            "envFile": "${workspaceFolder}/.env.test.local",
             "env": {
                 "PYTHONPATH": "${cwd}",
                 "PYTHONPYCACHEPREFIX": "/tmp",
