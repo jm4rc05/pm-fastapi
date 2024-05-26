@@ -1,4 +1,4 @@
-import os, logging, logging.config, jwt, hashlib
+import os, logging, logging.config, jwt
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Union
 from fastapi import Request, Response, Depends, HTTPException, status
