@@ -28,6 +28,14 @@ def get_token_wrong_password(request):
     else:
         return False
 
+@fixture(scope="module", autouse=True)
+def get_token_wrong_user(request):
+    response = requests.post(f'{HOST_URL}/token', headers = { 'Content-Type': 'application/x-www-form-urlencoded' }, data = { 'username': 'wrong_user', 'password': 'wrong_password' })
+    if response.status_code == 200:
+        return response.json()['token']
+    else:
+        return False
+
 def test_unauthorized():
     header = {
         'Content-Type': 'application/json',
@@ -54,6 +62,19 @@ def test_invalid_token():
 
 def test_wrong_password(get_token_wrong_password):
     token = get_token_wrong_password
+    header = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {token}',
+    }
+    response = requests.post(
+        SERVICE_URL, 
+        headers = header, 
+        data = '{"query": "{ persons { name title } }"}'
+    )
+    assert response.status_code == 401
+
+def test_wrong_user(get_token_wrong_user):
+    token = get_token_wrong_user
     header = {
         'Content-Type': 'application/json',
         'Authorization': f'Bearer {token}',
