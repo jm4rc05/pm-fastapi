@@ -86,7 +86,13 @@ async def login(response: Response, data: Annotated[OAuth2PasswordRequestForm, D
 
     return Token(token = access, type = 'bearer')
 
-@api.post('/person', dependencies = [Depends(RateLimiter(times = API_LIMITER_RATE, seconds = API_LIMITER_TIME))])
+@api.post(
+    '/person', 
+    dependencies = [Depends(RateLimiter(
+        times = API_LIMITER_RATE, 
+        seconds = API_LIMITER_TIME
+    ))]
+)
 async def get_person(request: Request, user: Annotated[Account, Depends(user)]):
     return await person.serve(request)
 
