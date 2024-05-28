@@ -24,7 +24,7 @@ mutation = MutationType()
 
 
 @query.field('person')
-def person(_, id):
+def person(_, __, id):
     with session_factory() as db:
         return db.query(Person).filter(Person.id == id).first()
 

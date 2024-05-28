@@ -5,7 +5,8 @@ from decouple import config
 from dotenv import load_dotenv
 
 load_dotenv('.env.local')
-load_dotenv('.env.test.local')
+load_dotenv('.workspace.env')
+print(f'*** ADMIN_KEY *** {config("ADMIN_KEY")} ***')
 
 HOST_URL = 'http://localhost:8000'
 SERVICE_URL = f'{HOST_URL}/sales'
@@ -60,7 +61,7 @@ def test_add_sale_shop(get_token):
     response = requests.post(
         SERVICE_URL, 
         headers = header, 
-        json = { 'query': 'mutation { addShop(name: "Loja de Teste") { name } }' }
+        json = { 'query': 'mutation { addShop(name: "Loja de Teste", category: 1, address: 1) { name } }' }
     )
     print(response.json())
     assert response.status_code == 200

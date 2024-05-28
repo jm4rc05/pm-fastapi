@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "cwd": "${workspaceFolder}/app",
-            "envFile": "${workspaceFolder}/.env.test.local",
+            "envFile": "${workspaceFolder}/.workspace.env",
             "env": {
                 "PYTHONPATH": "${cwd}",
                 "PYTHONPYCACHEPREFIX": "/tmp",

@@ -3,6 +3,7 @@ from fastapi import Request, Response
 from ariadne import load_schema_from_path, QueryType, MutationType, make_executable_schema
 from ariadne.asgi import GraphQL
 from ariadne.validation import cost_validator, cost_directive
+from sqlalchemy.orm import subqueryload
 from graphql import GraphQLSchema
 from decouple import config
 from dotenv import load_dotenv
@@ -23,24 +24,44 @@ query = QueryType()
 mutation = MutationType()
 
 @query.field('category')
-def category(_, id):
+def category(_, __, id):
     with session_factory() as db:
-        return db.query(Category).filter(Category.id == id).first()
+        return db.query(Category).filter(Category.id == id).options(
+            subqueryload(Category.shops),
+            subqueryload(Category.customers)
+        ).first()
+
+@query.field('categories')
+def categories(*_):
+    with session_factory() as db:
+        return db.query(Category).options(
+            subqueryload(Category.shops),
+            subqueryload(Category.customers)
+        ).all()
 
 @query.field('address')
-def shop(_, id):
+def address(_, __, id):
     with session_factory() as db:
-        return db.query(Address).filter(Address.id == id).first()
+        return db.query(Address).filter(Address.id == id).options(
+            subqueryload(Address.shops),
+            subqueryload(Address.customers)
+        ).first()
 
 @query.field('shop')
-def shop(_, id):
+def shop(_, __, id):
     with session_factory() as db:
-        return db.query(Shop).filter(Shop.id == id).first()
+        return db.query(Shop).filter(Shop.id == id).options(
+            subqueryload(Shop.category),
+            subqueryload(Shop.address)
+        ).first()
 
 @query.field('customer')
-def shop(_, id):
+def customer(_, __, id):
     with session_factory() as db:
-        return db.query(Customer).filter(Customer.id == id).first()
+        return db.query(Customer).filter(Customer.id == id).options(
+            subqueryload(Customer.category),
+            subqueryload(Customer.address)
+        ).first()
 
 @mutation.field('addCategory')
 def addCategory(_, __, name):
@@ -65,9 +86,13 @@ def addAddress(_, __, street, city, county, postal, country):
         return _address
 
 @mutation.field('addShop')
-def addShop(_, __, name):
+def addShop(_, __, name, category = None, address = None):
     with session_factory() as db:
         _shop = Shop(name = name)
+        if category:
+            _shop.category_id = category
+        if address:
+            _shop.address_id = address
         db.add(_shop)
         db.commit()
         db.refresh(_shop)

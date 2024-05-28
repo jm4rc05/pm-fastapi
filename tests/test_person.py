@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 
 load_dotenv('.env.local')
-load_dotenv('.env.test.local')
+load_dotenv('.workspace.env')
 
 HOST_URL = 'http://localhost:8000'
 SERVICE_URL = f'{HOST_URL}/person'
