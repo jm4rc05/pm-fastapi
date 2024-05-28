@@ -75,7 +75,7 @@ def test_add_sale_customer(get_token):
     response = requests.post(
         SERVICE_URL, 
         headers = header, 
-        json = { 'query': 'mutation { addCustomer(name: "Zé") { name } }' }
+        json = { 'query': 'mutation { addCustomer(name: "Zé", category: 1, address: 1) { name } }' }
     )
     print(response.json())
     assert response.status_code == 200

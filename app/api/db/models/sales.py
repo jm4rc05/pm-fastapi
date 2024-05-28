@@ -18,7 +18,8 @@ class Customer(Base):
     name = Column(String)
     category_id: Mapped[Optional[int]] = mapped_column(ForeignKey('category.id'))
     category: Mapped[Optional['Category']] = relationship(back_populates = 'customers')
-    address: Mapped[Optional[int]] = mapped_column(ForeignKey('address.id'))
+    address_id: Mapped[Optional[int]] = mapped_column(ForeignKey('address.id'))
+    address: Mapped[Optional['Address']] = relationship(back_populates = 'customers')
     shops: Mapped[List['Shop']] = relationship(secondary = categorization, back_populates = 'customers')
 
 class Shop(Base):

@@ -101,9 +101,13 @@ def addShop(_, __, name, category = None, address = None):
         return _shop
 
 @mutation.field('addCustomer')
-def addCustomer(_, __, name):
+def addCustomer(_, __, name, category = None, address = None):
     with session_factory() as db:
         _customer = Customer(name = name)
+        if category:
+            _customer.category_id = category
+        if address:
+            _customer.address_id = address
         db.add(_customer)
         db.commit()
         db.refresh(_customer)
@@ -146,12 +150,16 @@ def updateAddress(_, __, id, street = None, city = None, county = None, postal =
         return _address
 
 @mutation.field('updateShop')
-def updateShop(_, __, id, name = None, category: int = None, address: int = None):
+def updateShop(_, __, id, name = None, category = None, address = None):
     with session_factory() as db:
         _shop = db.query(Shop).filter(Shop.id == id).first()
         if _shop:
             if name:
                 _shop.name = name
+            if category:
+                _shop.category_id = category
+            if address:
+                _shop.address_id = address
             db.commit()
             db.refresh(_shop)
             logger.info(f'Updated {__name__} {name}')
@@ -159,12 +167,16 @@ def updateShop(_, __, id, name = None, category: int = None, address: int = None
         return _shop
 
 @mutation.field('updateCustomer')
-def updateCustomer(_, __, id, name = None, category: int = None, address: int = None):
+def updateCustomer(_, __, id, name = None, category = None, address = None):
     with session_factory() as db:
         _customer = db.query(Customer).filter(Customer.id == id).first()
         if _customer:
             if name:
                 _customer.name = name
+            if category:
+                _customer.category_id = category
+            if address:
+                _customer.address_id = address
             db.commit()
             db.refresh(_customer)
             logger.info(f'Updated {__name__} {name}')
