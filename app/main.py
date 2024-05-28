@@ -17,7 +17,7 @@ from constants import ROOT_DIR
 from api.db.database import session_factory, Base, engine
 from api.db.models.account import Account, AccountAdmin, Token
 from api.middleware.authorization import user, token, authenticate
-from api.resolvers import person
+from api.resolvers import person, sales, orders
 
 
 load_dotenv('.env.local')
@@ -95,6 +95,26 @@ async def login(response: Response, data: Annotated[OAuth2PasswordRequestForm, D
 )
 async def get_person(request: Request, user: Annotated[Account, Depends(user)]):
     return await person.serve(request)
+
+@api.post(
+    '/sales',
+    dependencies = [Depends(RateLimiter(
+        times = API_LIMITER_RATE,
+        seconds = API_LIMITER_TIME
+    ))]
+)
+async def get_sales(request: Request, user: Annotated[Account, Depends(user)]):
+    return await sales.serve(request)
+
+@api.post(
+    '/orders',
+    dependencies = [Depends(RateLimiter(
+        times = API_LIMITER_RATE,
+        seconds = API_LIMITER_TIME
+    ))]
+)
+async def get_orders(request: Request, user: Annotated[Account, Depends(user)]):
+    return await orders.serve(request)
 
 if __name__ == '__main__':
     from uvicorn import run

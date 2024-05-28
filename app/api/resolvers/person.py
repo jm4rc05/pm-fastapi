@@ -22,6 +22,7 @@ logger.info(f'API maximum cost: {API_MAXIMUM_COST}')
 query = QueryType()
 mutation = MutationType()
 
+
 @query.field('person')
 def person(_, id):
     with session_factory() as db:
@@ -34,14 +35,14 @@ def persons(*_):
 
 @mutation.field('add')
 def add(_, __, name, title):
-    _person = Person(name = name, title = title)
     with session_factory() as db:
+        _person = Person(name = name, title = title)
         db.add(_person)
         db.commit()
         db.refresh(_person)
         logger.info(f'Added {__name__} {name}')
-    
-    return _person
+
+        return _person
 
 @mutation.field('update')
 def update(_, __, id, name = None, title = None):

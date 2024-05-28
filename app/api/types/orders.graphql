@@ -1,0 +1,57 @@
+directive @cost(complexity: Int multipliers: [String!] useMultipliers: Boolean) on FIELD_DEFINITION
+
+
+type Product {
+    id: Int!
+    name: String!
+    price: Currency!
+}
+
+type Cart {
+    id: Int!
+
+}
+
+type Item {
+    id: Int!
+
+}
+
+type Query {
+    product(id: Int!): Product
+    cart(id: Int!): Cart
+    item(id: Int!): Item
+}
+
+type Mutation {
+    addProduct(
+
+    ): Product
+    addCart(
+
+    ): Cart
+    addItem(
+
+    ): Item
+    updateProduct(
+        id: Int!
+
+    ): Product
+    updateCart(
+        id: Int!
+
+    ): Cart
+    updateItem(
+        id: Int!
+
+    ): Item
+    deleteProduct(
+        id: Int!
+    ): Boolean
+    deleteCart(
+        id: Int!
+    ): Boolean
+    deleteItem(
+        id: Int!
+    ): Boolean
+}

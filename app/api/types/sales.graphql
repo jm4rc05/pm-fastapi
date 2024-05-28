@@ -1,0 +1,96 @@
+directive @cost(complexity: Int multipliers: [String!] useMultipliers: Boolean) on FIELD_DEFINITION
+
+
+type Category {
+    id: Int!
+    name: String!
+}
+
+type Address {
+    id: Int!
+    street: String!
+    city: String!
+    county: String!
+    postal: String!
+    country: String!
+}
+
+type Shop {
+    id: Int!
+    name: String!
+    category: Category
+    address: Address
+}
+
+type Customer {
+    id: Int!
+    name: String!
+    category: Category
+    address: Address
+}
+
+type Query {
+    category(id: Int!): Category
+    address(id: Int!): Address
+    shop(id: Int!): Shop
+    customer(id: Int!): Customer
+}
+
+type Mutation {
+    addCategory(
+        name: String!
+    ): Category
+    addAddress(
+        street: String!
+        city: String!
+        county: String!
+        postal: String!
+        country: String!
+    ): Address
+    addShop(
+        name: String!
+        category: Int
+        address: Int
+    ): Shop
+    addCustomer(
+        name: String!
+        category: Int
+        address: Int
+    ): Customer
+    updateCategory(
+        id: Int!
+        name: String
+    ): Category
+    updateAddress(
+        id: Int!
+        street: String
+        city: String
+        county: String
+        postal: String
+        country: String
+    ): Address
+    updateShop(
+        id: Int!
+        name: String
+        category: Int
+        address: Int
+    ): Shop
+    updateCustomer(
+        id: Int!
+        name: String
+        category: Int
+        address: Int
+    ): Customer
+    deleteCategory(
+        id: Int!
+    ): Boolean
+    deleteAddress(
+        id: Int!
+    ): Boolean
+    deleteShop(
+        id: Int!
+    ): Boolean
+    deleteCustomer(
+        id: Int!
+    ): Boolean
+}

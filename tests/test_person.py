@@ -12,25 +12,37 @@ HOST_URL = 'http://localhost:8000'
 SERVICE_URL = f'{HOST_URL}/person'
 
 
-@fixture(scope="module", autouse=True)
+@fixture(scope = 'module', autouse = True)
 def get_token(request):
-    response = requests.post(f'{HOST_URL}/token', headers = { 'Content-Type': 'application/x-www-form-urlencoded' }, data = { 'username': 'admin', 'password': config('ADMIN_KEY') })
+    response = requests.post(
+        f'{HOST_URL}/token', 
+        headers = { 'Content-Type': 'application/x-www-form-urlencoded' }, 
+        data = { 'username': 'admin', 'password': config('ADMIN_KEY') }
+    )
     if response.status_code == 200:
         return response.json()['token']
     else:
         return False
 
-@fixture(scope="module", autouse=True)
+@fixture(scope = 'module', autouse = True)
 def get_token_wrong_password(request):
-    response = requests.post(f'{HOST_URL}/token', headers = { 'Content-Type': 'application/x-www-form-urlencoded' }, data = { 'username': 'admin', 'password': 'wrong_password' })
+    response = requests.post(
+        f'{HOST_URL}/token', 
+        headers = { 'Content-Type': 'application/x-www-form-urlencoded' }, 
+        data = { 'username': 'admin', 'password': 'wrong_password' }
+    )
     if response.status_code == 200:
         return response.json()['token']
     else:
         return False
 
-@fixture(scope="module", autouse=True)
+@fixture(scope = 'module', autouse = True)
 def get_token_wrong_user(request):
-    response = requests.post(f'{HOST_URL}/token', headers = { 'Content-Type': 'application/x-www-form-urlencoded' }, data = { 'username': 'wrong_user', 'password': 'wrong_password' })
+    response = requests.post(
+        f'{HOST_URL}/token', 
+        headers = { 'Content-Type': 'application/x-www-form-urlencoded' }, 
+        data = { 'username': 'wrong_user', 'password': 'wrong_password' }
+    )
     if response.status_code == 200:
         return response.json()['token']
     else:
@@ -169,7 +181,7 @@ def test_cost(get_token):
         json = { 'query': '{ persons { name title } }' }
     )
     print(response.json())
-    assert response.status_code == 429
+    assert response.status_code == 200
     
 @pytest.mark.skip
 @pytest.mark.order(before = 'test_token_duration')

@@ -1,4 +1,4 @@
-directive @cost(complexity: Int, multipliers: [String!], useMultipliers: Boolean) on FIELD | FIELD_DEFINITION
+directive @cost(complexity: Int, multipliers: [String!], useMultipliers: Boolean) on FIELD_DEFINITION
 
 type Person {
     id: Int!
@@ -7,18 +7,18 @@ type Person {
 }
 
 type Query {
-    person(id: Int!): Person,
+    person(id: Int!): Person
     persons: [Person!]!
 }
 
 type Mutation {
     add(
-        name: String!,
+        name: String!
         title: String!
     ): Person,
     update(
-        id: Int!,
-        name: String,
+        id: Int!
+        name: String
         title: String
     ): Person,
     delete(
