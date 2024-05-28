@@ -8,7 +8,7 @@
             "name": "Python: app/main.py",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "main.py",
             "cwd": "${workspaceFolder}/app",
             "envFile": "${workspaceFolder}/.workspace.env",
             "env": {
