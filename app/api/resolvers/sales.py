@@ -50,7 +50,7 @@ def customer(_, __, id: int) -> Customer:
 @query.field('product')
 def product(_, __, id: int) -> Product:
     with session_factory() as db:
-        return db.scalars(select(Product).filter(Product.id == id)).options(subqueryload('*')).first()
+        return db.scalars(select(Product).filter(Product.id == id).options(subqueryload('*'))).first()
 
 @query.field('cart')
 def cart(_, __, id: int) -> Cart:
