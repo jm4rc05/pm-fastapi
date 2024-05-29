@@ -1,6 +1,9 @@
 directive @cost(complexity: Int multipliers: [String!] useMultipliers: Boolean) on FIELD_DEFINITION
 
 
+scalar Float
+
+
 type Category {
     id: Int!
     name: String!
@@ -24,6 +27,7 @@ type Shop {
     name: String!
     category: Category
     address: Address
+    sales: [Cart!]
 }
 
 type Customer {
@@ -31,7 +35,30 @@ type Customer {
     name: String!
     category: Category
     address: Address
+    orders: [Cart!]
 }
+
+type Product {
+    id: Int!
+    name: String!
+    price: Float!
+}
+
+type Cart {
+    id: Int!
+    customer: Customer!
+    shop: Shop!
+    items: [Item!]
+}
+
+type Item {
+    id: Int!
+    quantity: Int!
+    value: Float!
+    cart: Cart!
+    product: Product!
+}
+
 
 type Query {
     category(id: Int): Category
@@ -39,7 +66,11 @@ type Query {
     address(id: Int): Address
     shop(id: Int): Shop
     customer(id: Int): Customer
+    product(id: Int!): Product
+    cart(id: Int!): Cart
+    item(id: Int!): Item
 }
+
 
 type Mutation {
     addCategory(
@@ -96,6 +127,38 @@ type Mutation {
         id: Int!
     ): Boolean
     deleteCustomer(
+        id: Int!
+    ): Boolean
+    addProduct(
+        name: String!
+        price: Float!
+    ): Product
+    addCart(
+        customer: Int!
+        shop: Int!
+    ): Cart
+    addItem(
+        cart: Int!
+        product: Int!
+        quantity: Int!
+    ): Item
+    updateProduct(
+        id: Int!
+        name: String
+        price: Float
+    ): Product
+    updateItem(
+        id: Int!
+        quantity: Int
+        value: Float
+    ): Item
+    deleteProduct(
+        id: Int!
+    ): Boolean
+    deleteCart(
+        id: Int!
+    ): Boolean
+    deleteItem(
         id: Int!
     ): Boolean
 }

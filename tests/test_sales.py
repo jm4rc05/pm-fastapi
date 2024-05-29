@@ -20,16 +20,15 @@ def get_token(request):
         data = { 'username': 'admin', 'password': config('ADMIN_KEY') }
     )
     if response.status_code == 200:
-        return response.json()['token']
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {response.json()["token"]}',
+        }
     else:
         return False
 
-def test_add_sale_category(get_token):
-    token = get_token
-    header = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {token}',
-    }
+def test_add_category(get_token):
+    header = get_token
     response = requests.post(
         SERVICE_URL,
         headers = header,
@@ -38,12 +37,8 @@ def test_add_sale_category(get_token):
     print(response.json())
     assert response.status_code == 200
 
-def test_add_sale_address(get_token):
-    token = get_token
-    header = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {token}',
-    }
+def test_add_address(get_token):
+    header = get_token
     response = requests.post(
         SERVICE_URL, 
         headers = header, 
@@ -52,12 +47,8 @@ def test_add_sale_address(get_token):
     print(response.json())
     assert response.status_code == 200
 
-def test_add_sale_shop(get_token):
-    token = get_token
-    header = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {token}',
-    }
+def test_add_shop(get_token):
+    header = get_token
     response = requests.post(
         SERVICE_URL, 
         headers = header, 
@@ -66,12 +57,8 @@ def test_add_sale_shop(get_token):
     print(response.json())
     assert response.status_code == 200
 
-def test_add_sale_customer(get_token):
-    token = get_token
-    header = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {token}',
-    }
+def test_add_customer(get_token):
+    header = get_token
     response = requests.post(
         SERVICE_URL, 
         headers = header, 
@@ -80,12 +67,8 @@ def test_add_sale_customer(get_token):
     print(response.json())
     assert response.status_code == 200
 
-def test_get_sale_category(get_token):
-    token = get_token
-    header = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {token}',
-    }
+def test_get_category(get_token):
+    header = get_token
     response = requests.post(
         SERVICE_URL, 
         headers = header, 
@@ -94,12 +77,8 @@ def test_get_sale_category(get_token):
     print(response.json())
     assert response.status_code == 200
 
-def test_update_sale_category(get_token):
-    token = get_token
-    header = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {token}',
-    }
+def test_update_category(get_token):
+    header = get_token
     response = requests.post(
         SERVICE_URL, 
         headers = header, 
@@ -108,12 +87,8 @@ def test_update_sale_category(get_token):
     print(response.json())
     assert response.status_code == 200
 
-def test_update_sale_address(get_token):
-    token = get_token
-    header = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {token}',
-    }
+def test_update_address(get_token):
+    header = get_token
     response = requests.post(
         SERVICE_URL, 
         headers = header, 
@@ -122,12 +97,8 @@ def test_update_sale_address(get_token):
     print(response.json())
     assert response.status_code == 200
 
-def test_update_sale_shop(get_token):
-    token = get_token
-    header = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {token}',
-    }
+def test_update_shop(get_token):
+    header = get_token
     response = requests.post(
         SERVICE_URL, 
         headers = header, 
@@ -136,12 +107,8 @@ def test_update_sale_shop(get_token):
     print(response.json())
     assert response.status_code == 200
 
-def test_update_sale_customer(get_token):
-    token = get_token
-    header = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {token}',
-    }
+def test_update_customer(get_token):
+    header = get_token
     response = requests.post(
         SERVICE_URL, 
         headers = header, 
@@ -152,11 +119,7 @@ def test_update_sale_customer(get_token):
 
 @pytest.mark.skip
 def test_cost(get_token):
-    token = get_token
-    header = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {token}',
-    }
+    header = get_token
     response = requests.post(
         SERVICE_URL, 
         headers = header, 
@@ -168,11 +131,7 @@ def test_cost(get_token):
 @pytest.mark.skip
 @pytest.mark.order(before = 'test_token_duration')
 def test_rate_limit(get_token):
-    token = get_token
-    header = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {token}',
-    }
+    header = get_token
     for _ in range(1, config('API_LIMITER_RATE', cast = int) + 10):
         response = requests.post(
             SERVICE_URL, 
@@ -191,11 +150,7 @@ def test_rate_limit(get_token):
 @pytest.mark.skip
 @pytest.mark.order('last')
 def test_token_duration(get_token):
-    token = get_token
-    header = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {token}',
-    }
+    header = get_token
     snooze = config('API_TOKEN_DURATION', cast = int) + 1
     sleep(snooze)
     response = requests.post(
@@ -205,3 +160,11 @@ def test_token_duration(get_token):
     )
     print(response.json())
     assert response.status_code == 401
+
+def test_add_product(get_token):
+    header = get_token
+    response = requests.post(
+        SERVICE_URL,
+        headers = header,
+        json = { 'query': 'mutation { addProduct(name: "Produto contrabandeado", price: 1000.00) { name price } }' }
+    )

@@ -1,4 +1,4 @@
-import os, logging, logging.config
+import os, logging
 from contextlib import contextmanager
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker, Session
@@ -7,9 +7,6 @@ from decouple import config
 from dotenv import load_dotenv
 from constants import ROOT_DIR
 
-
-logging.config.fileConfig(f'{ROOT_DIR}/logging.conf')
-logger = logging.getLogger()
 
 load_dotenv('.env.local')
 
@@ -31,8 +28,8 @@ Base = declarative_base()
 def session_factory() -> Session:
     db = SessionLocal()
     try:
-        logger.info(f'Session to postgres at {POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE} created')
+        logging.info(f'Session to postgres at {POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE} created')
         yield db
     finally:
-        logger.info(f'Session to postgres at {POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE} closed')
+        logging.info(f'Session to postgres at {POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE} closed')
         db.close()

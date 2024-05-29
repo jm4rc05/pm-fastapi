@@ -1,4 +1,4 @@
-import os, logging, logging.config
+import os, logging
 import redis.asyncio as redis
 from fastapi import FastAPI, Request, Response, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -17,13 +17,13 @@ from constants import ROOT_DIR
 from api.db.database import session_factory, Base, engine
 from api.db.models.account import Account, AccountAdmin, Token
 from api.middleware.authorization import user, token, authenticate
-from api.resolvers import sales, orders
+from api.resolvers import sales
 
 
 load_dotenv('.env.local')
 
-logging.config.fileConfig(f'{ROOT_DIR}/logging.conf')
-logger = logging.getLogger()
+logging.basicConfig()
+logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)
 
 API_PORT = config('API_PORT', cast = int, default = 8000)
 API_RELOAD = config('API_RELOAD', cast = bool, default = True)
