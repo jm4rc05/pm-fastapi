@@ -1,7 +1,7 @@
 import os, logging, logging.config
 from contextlib import contextmanager
 from sqlalchemy import create_engine, MetaData
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.declarative import declarative_base
 from decouple import config
 from dotenv import load_dotenv
@@ -28,7 +28,7 @@ Base = declarative_base()
 
 @staticmethod
 @contextmanager
-def session_factory():
+def session_factory() -> Session:
     db = SessionLocal()
     try:
         logger.info(f'Session to postgres at {POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE} created')

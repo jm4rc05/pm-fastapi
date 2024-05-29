@@ -49,7 +49,7 @@ def authenticate(username: str, password: str) -> Account:
                 headers = { 'WWW-Authenticate': 'Bearer' }
             )
 
-def token(data: dict, delta: Union[timedelta, None] = None):
+def token(data: dict, delta: Union[timedelta, None] = None) -> str:
     payload = data.copy()
 
     if delta:
@@ -60,7 +60,7 @@ def token(data: dict, delta: Union[timedelta, None] = None):
 
     return jwt.encode(payload, SECRET_KEY, algorithm = 'HS256')
 
-def user(data: Annotated[str, Depends(oauth2)]):
+def user(data: Annotated[str, Depends(oauth2)]) -> dict:
     error = HTTPException(
         status_code = status.HTTP_401_UNAUTHORIZED, 
         detail = 'Could not validate credentials', 

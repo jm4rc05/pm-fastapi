@@ -3,6 +3,7 @@ from fastapi import Request, Response
 from ariadne import load_schema_from_path, QueryType, MutationType, make_executable_schema
 from ariadne.asgi import GraphQL
 from ariadne.validation import cost_validator, cost_directive
+from sqlalchemy import select
 from sqlalchemy.orm import subqueryload
 from graphql import GraphQLSchema
 from decouple import config
@@ -15,7 +16,7 @@ from api.db.models.sales import Category, Address, Shop, Customer
 load_dotenv('.env.local')
 
 logging.config.fileConfig(f'{ROOT_DIR}/logging.conf')
-logger = logging.getLogger('graphql')
+logger = logging.getLogger()
 
 API_MAXIMUM_COST = config('API_MAXIMUM_COST', cast = int, default = 5)
 logger.info(f'API maximum cost: {API_MAXIMUM_COST}')
@@ -24,47 +25,47 @@ query = QueryType()
 mutation = MutationType()
 
 @query.field('category')
-def category(_, __, id):
+def category(_, __, id: int) -> Category:
     with session_factory() as db:
-        return db.query(Category).filter(Category.id == id).options(
+        return db.scalars(select(Category).filter(Category.id == id).options(
             subqueryload(Category.shops),
             subqueryload(Category.customers)
-        ).first()
+        )).first()
 
 @query.field('categories')
 def categories(*_):
     with session_factory() as db:
-        return db.query(Category).options(
+        return db.scalars(select(Category).options(
             subqueryload(Category.shops),
             subqueryload(Category.customers)
-        ).all()
+        )).all()
 
 @query.field('address')
-def address(_, __, id):
+def address(_, __, id: int) -> Address:
     with session_factory() as db:
-        return db.query(Address).filter(Address.id == id).options(
+        return db.scalar(select(Address).filter(Address.id == id).options(
             subqueryload(Address.shops),
             subqueryload(Address.customers)
-        ).first()
+        )).first()
 
 @query.field('shop')
-def shop(_, __, id):
+def shop(_, __, id: int) -> Shop:
     with session_factory() as db:
-        return db.query(Shop).filter(Shop.id == id).options(
+        return db.scalars(select(Shop).filter(Shop.id == id).options(
             subqueryload(Shop.category),
             subqueryload(Shop.address)
-        ).first()
+        )).first()
 
 @query.field('customer')
-def customer(_, __, id):
+def customer(_, __, id: int) -> Customer:
     with session_factory() as db:
-        return db.query(Customer).filter(Customer.id == id).options(
+        return db.scalars(select(Customer).filter(Customer.id == id).options(
             subqueryload(Customer.category),
             subqueryload(Customer.address)
-        ).first()
+        )).first()
 
 @mutation.field('addCategory')
-def addCategory(_, __, name):
+def addCategory(_, __, name: str) -> Category:
     with session_factory() as db:
         _category = Category(name = name)
         db.add(_category)
@@ -75,7 +76,7 @@ def addCategory(_, __, name):
         return _category
 
 @mutation.field('addAddress')
-def addAddress(_, __, street, city, county, postal, country):
+def addAddress(_, __, street: str, city: str, county: str, postal: str, country: str) -> Address:
     with session_factory() as db:
         _address = Address(street = street, city = city, county = county, postal = postal, country = country)
         db.add(_address)
@@ -86,7 +87,7 @@ def addAddress(_, __, street, city, county, postal, country):
         return _address
 
 @mutation.field('addShop')
-def addShop(_, __, name, category = None, address = None):
+def addShop(_, __, name: str, category: int = None, address: int = None) -> Shop:
     with session_factory() as db:
         _shop = Shop(name = name)
         if category:
@@ -101,7 +102,7 @@ def addShop(_, __, name, category = None, address = None):
         return _shop
 
 @mutation.field('addCustomer')
-def addCustomer(_, __, name, category = None, address = None):
+def addCustomer(_, __, name: str, category: int = None, address: int = None) -> Customer:
     with session_factory() as db:
         _customer = Customer(name = name)
         if category:
@@ -116,9 +117,9 @@ def addCustomer(_, __, name, category = None, address = None):
         return _customer
 
 @mutation.field('updateCategory')
-def updateCategory(_, __, id, name = None):
+def updateCategory(_, __, id: int, name: str = None) -> Category:
     with session_factory() as db:
-        _category = db.query(Category).filter(Category.id == id).first()
+        _category = db.scalars(select(Category).filter(Category.id == id)).first()
         if _category:
             if name:
                 _category.name = name
@@ -129,9 +130,9 @@ def updateCategory(_, __, id, name = None):
         return _category
 
 @mutation.field('updateAddress')
-def updateAddress(_, __, id, street = None, city = None, county = None, postal = None, country = None):
+def updateAddress(_, __, id: int, street: str = None, city: str = None, county: str = None, postal: str = None, country: str = None) -> Address:
     with session_factory() as db:
-        _address = db.query(Address).filter(Address.id == id).first()
+        _address = db.scalars(select(Address).filter(Address.id == id)).first()
         if _address:
             if street:
                 _address.street = street
@@ -150,9 +151,9 @@ def updateAddress(_, __, id, street = None, city = None, county = None, postal =
         return _address
 
 @mutation.field('updateShop')
-def updateShop(_, __, id, name = None, category = None, address = None):
+def updateShop(_, __, id: int, name: str = None, category: str = None, address: str = None) -> Shop:
     with session_factory() as db:
-        _shop = db.query(Shop).filter(Shop.id == id).first()
+        _shop = db.scalars(select(Shop).filter(Shop.id == id)).first()
         if _shop:
             if name:
                 _shop.name = name
@@ -167,9 +168,9 @@ def updateShop(_, __, id, name = None, category = None, address = None):
         return _shop
 
 @mutation.field('updateCustomer')
-def updateCustomer(_, __, id, name = None, category = None, address = None):
+def updateCustomer(_, __, id: int, name: str = None, category: str = None, address: str = None) -> Customer:
     with session_factory() as db:
-        _customer = db.query(Customer).filter(Customer.id == id).first()
+        _customer = db.scalars(select(Customer).filter(Customer.id == id)).first()
         if _customer:
             if name:
                 _customer.name = name
@@ -184,9 +185,9 @@ def updateCustomer(_, __, id, name = None, category = None, address = None):
         return _customer
 
 @mutation.field('deleteCategory')
-def deleteCategory(_, __, id):
+def deleteCategory(_, __, id: int) -> bool:
     with session_factory() as db:
-        _category = db.query(Category).filter(Category.id == id).first()
+        _category = db.scalars(select(Category).filter(Category.id == id)).first()
         if _category:
             db.delete(_category)
             db.commit()
@@ -196,9 +197,9 @@ def deleteCategory(_, __, id):
         return False
 
 @mutation.field('deleteAddress')
-def deleteAddress(_, __, id):
+def deleteAddress(_, __, id: int) -> bool:
     with session_factory() as db:
-        _address = db.query(Address).filter(Address.id == id).first()
+        _address = db.scalars(select(Address).filter(Address.id == id)).first()
         if _address:
             db.delete(_address)
             db.commit()
@@ -208,9 +209,9 @@ def deleteAddress(_, __, id):
         return False
 
 @mutation.field('deleteShop')
-def deleteShop(_, __, id):
+def deleteShop(_, __, id: int) -> bool:
     with session_factory() as db:
-        _shop = db.query(Shop).filter(Shop.id == id).first()
+        _shop = db.scalars(select(Shop).filter(Shop.id == id)).first()
         if _shop:
             db.delete(_shop)
             db.commit()
@@ -220,9 +221,9 @@ def deleteShop(_, __, id):
         return False
 
 @mutation.field('deleteCustomer')
-def deleteCustomer(_, __, id):
+def deleteCustomer(_, __, id: int) -> bool:
     with session_factory() as db:
-        _customer = db.query(Customer).filter(Customer.id == id).first()
+        _customer = db.scalars(select(Customer).filter(Customer.id == id)).first()
         if _customer:
             db.delete(_customer)
             db.commit()
