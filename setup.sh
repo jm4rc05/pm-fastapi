@@ -5,6 +5,8 @@ function main() {
     echo 'ADMIN_SALT='$(openssl rand -hex 16) >> .env.local
     echo 'SECRET_KEY='$(openssl rand -hex 32) >> .env.local
 
+    ./environment.sh
+
     pipenv lock && pipenv requirements > requirements.txt
 
     # Cleanup - recria os containers
