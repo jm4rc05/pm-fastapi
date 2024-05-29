@@ -96,16 +96,6 @@ async def login(response: Response, data: Annotated[OAuth2PasswordRequestForm, D
 async def get_sales(request: Request, user: Annotated[Account, Depends(user)]):
     return await sales.serve(request)
 
-@api.post(
-    '/orders',
-    dependencies = [Depends(RateLimiter(
-        times = API_LIMITER_RATE,
-        seconds = API_LIMITER_TIME
-    ))]
-)
-async def get_orders(request: Request, user: Annotated[Account, Depends(user)]):
-    return await orders.serve(request)
-
 if __name__ == '__main__':
     from uvicorn import run
     run(
