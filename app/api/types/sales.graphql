@@ -42,6 +42,8 @@ type Product {
     id: Int!
     name: String!
     price: Float!
+    sales: [Item!]
+
 }
 
 type Cart {

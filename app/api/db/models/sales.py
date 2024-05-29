@@ -61,7 +61,7 @@ class Product(Base):
     id: Mapped[int] = mapped_column(primary_key = True, index = True)
     name = Column(String)
     price = Column(Numeric(10, 2))
-    orders: Mapped[List['Item']] = relationship()
+    sales: Mapped[List['Item']] = relationship()
 
 class Cart(Base):
     __tablename__ = 'cart'
@@ -80,6 +80,6 @@ class Item(Base):
     cart_id: Mapped[int] = mapped_column(ForeignKey('cart.id'))
     cart: Mapped['Cart'] = relationship(back_populates = 'items')
     product_id: Mapped[int] = mapped_column(ForeignKey('product.id'))
-    product: Mapped['Product'] = relationship(back_populates = 'orders')
+    product: Mapped['Product'] = relationship(back_populates = 'sales')
     quantity = Column(Integer)
     value = Column(Numeric(10, 2))
