@@ -1,4 +1,4 @@
-directive @cost(complexity: Int multipliers: [String!] useMultipliers: Boolean) on FIELD_DEFINITION
+directive @cost(complexity: Int, multipliers: [String!], useMultipliers: Boolean) on FIELD | FIELD_DEFINITION
 
 
 scalar Float
@@ -25,16 +25,16 @@ type Address {
 type Shop {
     id: Int!
     name: String!
-    category: Category
-    address: Address
+    category: Category @cost(complexity: 2)
+    address: Address @cost(complexity: 2)
     sales: [Cart!]
 }
 
 type Customer {
     id: Int!
     name: String!
-    category: Category
-    address: Address
+    category: Category @cost(complexity: 2)
+    address: Address @cost(complexity: 2)
     orders: [Cart!]
 }
 
@@ -48,8 +48,8 @@ type Product {
 
 type Cart {
     id: Int!
-    customer: Customer!
-    shop: Shop!
+    customer: Customer! @cost(complexity: 2)
+    shop: Shop! @cost(complexity: 2)
     items: [Item!]
 }
 
@@ -57,19 +57,18 @@ type Item {
     id: Int!
     quantity: Int!
     value: Float!
-    cart: Cart!
-    product: Product!
+    cart: Cart! @cost(complexity: 2)
+    product: Product! @cost(complexity: 2)
 }
 
-
 type Query {
-    category(id: Int): Category
-    categories: [Category!]!
-    address(id: Int): Address
-    shop(id: Int): Shop
-    customer(id: Int): Customer
-    product(id: Int!): Product
-    cart(id: Int!): Cart
+    category(id: Int): Category @cost(complexity: 1, multipliers: ["shops", "customers"], useMultipliers: true)
+    categories: [Category!]! @cost(complexity: 2, multipliers: ["shops", "customers"], useMultipliers: true)
+    address(id: Int): Address @cost(complexity: 1, multipliers: ["shops", "customers"], useMultipliers: true)
+    shop(id: Int): Shop @cost(complexity: 1, multipliers: ["address"], useMultipliers: true)
+    customer(id: Int): Customer @cost(complexity: 1, multipliers: ["orders"], useMultipliers: true)
+    product(id: Int!): Product @cost(complexity: 1, multipliers: ["sales"], useMultipliers: true)
+    cart(id: Int!): Cart @cost(complexity: 1, multipliers: ["items"], useMultipliers: true)
     item(id: Int!): Item
 }
 

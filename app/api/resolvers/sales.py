@@ -15,9 +15,6 @@ from api.db.models.sales import Category, Address, Shop, Customer, Product, Cart
 
 load_dotenv('.env.local')
 
-API_MAXIMUM_COST = config('API_MAXIMUM_COST', cast = int, default = 5)
-logging.info(f'API maximum cost: {API_MAXIMUM_COST}')
-
 query = QueryType()
 mutation = MutationType()
 
@@ -328,6 +325,6 @@ def serve(request: Request) -> Response:
     schema = make_executable_schema(defs, query, mutation)
     return GraphQL(
         schema, 
-        validation_rules = [ cost_validator(maximum_cost = API_MAXIMUM_COST) ],
+        validation_rules = [cost_validator(maximum_cost = 5)],
         debug = True
     ).http_handler.graphql_http_server(request)
