@@ -25,16 +25,16 @@ type Address {
 type Shop {
     id: Int!
     name: String!
-    category: Category @cost(complexity: 2)
-    address: Address @cost(complexity: 2)
+    category: Category @cost(complexity: 1)
+    address: Address @cost(complexity: 1)
     sales: [Cart!]
 }
 
 type Customer {
     id: Int!
     name: String!
-    category: Category @cost(complexity: 2)
-    address: Address @cost(complexity: 2)
+    category: Category @cost(complexity: 1)
+    address: Address @cost(complexity: 1)
     orders: [Cart!]
 }
 
@@ -48,8 +48,8 @@ type Product {
 
 type Cart {
     id: Int!
-    customer: Customer! @cost(complexity: 2)
-    shop: Shop! @cost(complexity: 2)
+    customer: Customer! @cost(complexity: 1)
+    shop: Shop! @cost(complexity: 1)
     items: [Item!]
 }
 
@@ -57,8 +57,8 @@ type Item {
     id: Int!
     quantity: Int!
     value: Float!
-    cart: Cart! @cost(complexity: 2)
-    product: Product! @cost(complexity: 2)
+    cart: Cart! @cost(complexity: 1)
+    product: Product! @cost(complexity: 1)
 }
 
 type Query {

@@ -15,6 +15,8 @@ from api.db.models.sales import Category, Address, Shop, Customer, Product, Cart
 
 load_dotenv('.env.local')
 
+API_MAXIMUM_COST = config('API_MAXIMUM_COST', cast = int, default = 10)
+
 query = QueryType()
 mutation = MutationType()
 
@@ -319,12 +321,11 @@ def deleteItem(_, __, id: int) -> bool:
 
         return False
 
+handler = GraphQL(
+    make_executable_schema(load_schema_from_path('api/types/sales.graphql'), query, mutation), 
+    validation_rules = [cost_validator(maximum_cost = API_MAXIMUM_COST)],
+    debug = True
+).http_handler
+
 def serve(request: Request) -> Response:
-    load_path = 'api/types/sales.graphql'
-    defs = load_schema_from_path(load_path)
-    schema = make_executable_schema(defs, query, mutation)
-    return GraphQL(
-        schema, 
-        validation_rules = [cost_validator(maximum_cost = 5)],
-        debug = True
-    ).http_handler.graphql_http_server(request)
+    return handler.graphql_http_server(request)
