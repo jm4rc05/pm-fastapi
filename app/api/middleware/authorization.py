@@ -11,12 +11,13 @@ from passlib.exc import UnknownHashError
 from starlette.middleware.base import BaseHTTPMiddleware
 from api.db.database import session_factory
 from api.db.models.account import Account, Token, TokenData
-from constants import ROOT_DIR
+from api.middleware.secret import Secret
 
 
 load_dotenv('.env.local')
 
-SECRET_KEY = config('SECRET_KEY')
+secret = Secret()
+
 API_TOKEN_DURATION = config('API_TOKEN_DURATION', cast = int, default = 60)
 logging.info(f'Token duration: {API_TOKEN_DURATION}')
 
@@ -55,7 +56,7 @@ def token(data: dict, delta: Union[timedelta, None] = None) -> str:
         expiration = datetime.now(timezone.utc) + timedelta(seconds = API_TOKEN_DURATION)
     payload.update({ 'exp': expiration })
 
-    return jwt.encode(payload, SECRET_KEY, algorithm = 'HS256')
+    return jwt.encode(payload, secret.key, algorithm = 'HS256')
 
 def user(data: Annotated[str, Depends(oauth2)]) -> dict:
     error = HTTPException(
@@ -64,7 +65,7 @@ def user(data: Annotated[str, Depends(oauth2)]) -> dict:
         headers = { 'WWW-Authenticate': 'Bearer' }
     )
     try:
-        payload = jwt.decode(data, SECRET_KEY, algorithms = ['HS256'])
+        payload = jwt.decode(data, secret.key, algorithms = ['HS256'])
         username: str = payload.get('sub')
         if username is None:
             logging.info('Username not informed')

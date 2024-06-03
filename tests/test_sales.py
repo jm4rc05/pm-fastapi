@@ -136,13 +136,13 @@ def test_rate_limit(get_token):
         response = requests.post(
             SERVICE_URL, 
             headers = header, 
-            json = { 'query': '{ persons { name title } }' }
+            json = { 'query': '{ category(id: 1) { name } }' }
         )
         assert response.status_code == 200 or 429
     response = requests.post(
         SERVICE_URL, 
         headers = header, 
-        json = { 'query': '{ persons { name title } }' }
+        json = { 'query': '{ category(id: 1) { name } }' }
     )
     pprint.PrettyPrinter(indent = 2).pprint(dict(response.headers))
     assert response.status_code == 429
@@ -156,7 +156,7 @@ def test_token_duration(get_token):
     response = requests.post(
         SERVICE_URL, 
         headers = header, 
-        json = { 'query': '{ persons { name title } }' }
+        json = { 'query': '{ category(id: 1) { name } }' }
     )
     print(response.json())
     assert response.status_code == 401

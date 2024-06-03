@@ -8,7 +8,6 @@ from sqlalchemy.orm import subqueryload, joinedload
 from graphql import GraphQLSchema
 from decouple import config
 from dotenv import load_dotenv
-from constants import ROOT_DIR
 from api.db.database import session_factory
 from api.db.models.sales import Category, Address, Shop, Customer, Product, Cart, Item
 

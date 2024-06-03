@@ -5,7 +5,6 @@ from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.declarative import declarative_base
 from decouple import config
 from dotenv import load_dotenv
-from constants import ROOT_DIR
 
 
 load_dotenv('.env.local')

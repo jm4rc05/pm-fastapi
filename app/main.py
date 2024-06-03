@@ -13,7 +13,6 @@ from math import ceil
 from sqladmin import Admin
 from decouple import config
 from dotenv import load_dotenv
-from constants import ROOT_DIR
 from api.db.database import session_factory, Base, engine
 from api.db.models.account import Account, AccountAdmin, Token
 from api.middleware.authorization import user, token, authenticate
