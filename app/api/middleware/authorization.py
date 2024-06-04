@@ -10,7 +10,7 @@ from passlib.context import CryptContext
 from passlib.exc import UnknownHashError
 from starlette.middleware.base import BaseHTTPMiddleware
 from api.db.database import session_factory
-from api.db.models.account import Account, Token, TokenData
+from api.db.models.account import Account, Token
 from api.middleware.secret import Secret
 
 

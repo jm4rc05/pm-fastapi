@@ -29,8 +29,8 @@ passlib[bcrypt]==1.7.4
 psycopg[binary]==3.1.19; python_version >= '3.7'
 psycopg-binary==3.1.19
 pycparser==2.22; python_version >= '3.8'
-pydantic==2.7.2; python_version >= '3.8'
-pydantic-core==2.18.3; python_version >= '3.8'
+pydantic==2.7.3; python_version >= '3.8'
+pydantic-core==2.18.4; python_version >= '3.8'
 pygments==2.18.0; python_version >= '3.8'
 pyjwt[crypto]==2.8.0; python_version >= '3.7'
 python-decouple==3.8

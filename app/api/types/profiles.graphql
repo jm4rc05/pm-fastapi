@@ -1,0 +1,16 @@
+type Account {
+    id: Int!
+    name: String!
+    roles: [Role!]
+}
+
+type Role {
+    id: Int!
+    name: String!
+    accounts: [Account!]
+}
+
+type Query {
+    account(id: Int!): Account
+    role(id: Int!): Role
+}

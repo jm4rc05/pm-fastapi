@@ -9,6 +9,7 @@ from graphql import GraphQLSchema
 from decouple import config
 from dotenv import load_dotenv
 from api.db.database import session_factory
+from api.db.models.account import Account, Role
 from api.db.models.sales import Category, Address, Shop, Customer, Product, Cart, Item
 
 

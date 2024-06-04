@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 from api.db.database import session_factory, Base, engine
 from api.db.models.account import Account, AccountAdmin, Token
 from api.middleware.authorization import user, token, authenticate
-from api.resolvers import sales
+from api.resolvers import sales, profiles
 
 
 load_dotenv('.env.local')
@@ -94,6 +94,12 @@ async def login(response: Response, data: Annotated[OAuth2PasswordRequestForm, D
 )
 async def get_sales(request: Request, user: Annotated[Account, Depends(user)]):
     return await sales.serve(request)
+
+@api.post(
+    '/profiles'
+)
+async def get_profile(request: Request, user: Annotated[Account, Depends(user)]):
+    return await profiles.serve(request)
 
 if __name__ == '__main__':
     from uvicorn import run
