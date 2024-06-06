@@ -10,12 +10,19 @@ class Secret:
         self._key = None
         self.interval = interval
         
-        rotation = threading.Thread(target = self._schedule, args = (interval,))
-        rotation.daemon = True
-        rotation.start()
+        self.rotation = threading.Thread(target = self._schedule, args = (interval,))
+        self.rotation.stop = threading.Event()
+        self.rotation.daemon = True
 
     def __call__(self) -> str:
         return self._key
+
+    def __enter__(self):
+        self.rotation.start()
+        return self
+
+    def __exit__(self, *args, **kwargs):
+        self.rotation.stop.set()
 
     def _generate(self, length: int = 32) -> str:
        self._key = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length))
