@@ -14,10 +14,10 @@ python-multipart = "*"
 python-dotenv = "*"
 fastapi-route-logger-middleware = "*"
 fastapi = "*"
-sqladmin = "*"
 psycopg = {extras = ["binary"] }
 fastapi-limiter = "*"
 redis = "*"
+secweb = "*"
 
 [dev-packages]
 pytest = "*"

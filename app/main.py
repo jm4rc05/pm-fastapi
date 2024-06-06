@@ -1,6 +1,7 @@
-import os, logging
+import os, logging, json
 import redis.asyncio as redis
-from fastapi import FastAPI, Request, Response, Depends, HTTPException, status
+from fastapi import FastAPI, Request, Response, Depends, APIRouter, HTTPException, status
+from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_route_logger_middleware import RouteLoggerMiddleware
 from fastapi_limiter import FastAPILimiter
@@ -10,12 +11,13 @@ from contextlib import asynccontextmanager
 from typing import Annotated
 from datetime import datetime, timedelta, timezone
 from math import ceil
-from sqladmin import Admin
 from decouple import config
 from dotenv import load_dotenv
+from Secweb import SecWeb
 from api.db.database import session_factory, Base, engine
-from api.db.models.account import Account, AccountAdmin, Token
+from api.db.models.account import Account, Token
 from api.middleware.authorization import user, token, authenticate
+from api.middleware.secret import Secret
 from api.resolvers import sales, profiles
 
 
@@ -23,6 +25,7 @@ load_dotenv('.env.local')
 
 logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)
+
 
 API_PORT = config('API_PORT', cast = int, default = 8000)
 API_RELOAD = config('API_RELOAD', cast = bool, default = True)
@@ -40,8 +43,8 @@ async def expiration(request: Request, response: Response, pexpire: int):
     expire = ceil(pexpire / 1000)
 
     raise HTTPException(
-        status.HTTP_429_TOO_MANY_REQUESTS,
-        'Too Many Requests', 
+        status_code = status.HTTP_429_TOO_MANY_REQUESTS,
+        detail = 'Too Many Requests', 
         headers = { 'Retry-After': str(expire) }
     )
 
@@ -66,24 +69,28 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     await FastAPILimiter.close()
 
 api = FastAPI(lifespan = lifespan)
-admin = Admin(api, engine)
-admin.add_view(AccountAdmin)
 
 api.add_middleware(RouteLoggerMiddleware)
 
-@api.post('/token', dependencies=[Depends(RateLimiter(times = API_LIMITER_RATE, seconds = API_LIMITER_TIME))])
+@api.post('/token', dependencies = [Depends(RateLimiter(times = API_LIMITER_RATE, seconds = API_LIMITER_TIME))])
 async def login(response: Response, data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
     account = authenticate(data.username, data.password)
     if account is None:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='Incorrect username or password',
-            headers={'WWW-Authenticate': 'Bearer'},
+            status_code = status.HTTP_401_UNAUTHORIZED,
+            detail = 'Incorrect username or password',
+            headers = {'WWW-Authenticate': 'Bearer'},
         )
     else:
         access = token(data = { 'sub': account.name }, delta = timedelta(seconds = API_TOKEN_DURATION))
 
     return Token(token = access, type = 'bearer')
+
+@api.post(
+    '/profiles'
+)
+async def get_profile(request: Request, user: Annotated[Account, Depends(user)]):
+    return await profiles.serve(request)
 
 @api.post(
     '/sales',
@@ -95,11 +102,12 @@ async def login(response: Response, data: Annotated[OAuth2PasswordRequestForm, D
 async def get_sales(request: Request, user: Annotated[Account, Depends(user)]):
     return await sales.serve(request)
 
-@api.post(
-    '/profiles'
-)
-async def get_profile(request: Request, user: Annotated[Account, Depends(user)]):
-    return await profiles.serve(request)
+with open('headers.json') as settings:
+     SecWeb(
+        app = api, 
+        Option = json.load(settings), 
+        Routes = [route.path for route in api.routes]
+    )
 
 if __name__ == '__main__':
     from uvicorn import run

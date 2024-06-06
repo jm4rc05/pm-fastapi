@@ -1,5 +1,4 @@
 import logging
-from fastapi import HTTPException, status
 from sqlalchemy import Column, Integer, String, Table, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqladmin import ModelView
@@ -34,20 +33,6 @@ class Role(Base):
     id: Mapped[int] = mapped_column(primary_key = True, index = True)
     name = Column(String)
     accounts: Mapped[List['Account']] = relationship(secondary = profile, back_populates = 'roles')
-
-class AccountAdmin(ModelView, model = Account):
-    column_list = [
-        Account.id, 
-        Account.name, 
-        Account.key, 
-        Account.salt
-    ]
-
-class RoleAdmin(ModelView, model = Role):
-    column_list = [
-        Role.id,
-        Role.name
-    ]
 
 class Token(BaseModel):
     token: str

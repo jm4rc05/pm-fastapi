@@ -2,7 +2,6 @@ import os, logging, jwt
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Union
 from fastapi import Request, Response, Depends, HTTPException, status
-from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
 from decouple import config
 from dotenv import load_dotenv
@@ -26,6 +25,12 @@ oauth2 = OAuth2PasswordBearer(tokenUrl = 'token')
 
 
 def authenticate(username: str, password: str) -> Account:
+    error = HTTPException(
+        status_code = status.HTTP_401_UNAUTHORIZED, 
+        detail = 'Could not validate credentials', 
+        headers = { 'WWW-Authenticate': 'Bearer' }
+    )
+
     with session_factory() as db:
         account = db.query(Account).filter(Account.name == username).first()
         try:
@@ -34,18 +39,10 @@ def authenticate(username: str, password: str) -> Account:
                 return account
             else:
                 logging.info(f'Invalid credentials for user {username}')
-                raise HTTPException(
-                    status_code = status.HTTP_401_UNAUTHORIZED, 
-                    detail = 'Invalid credentials', 
-                    headers = { 'WWW-Authenticate': 'Bearer' }
-                )
+                raise error
         except UnknownHashError:
             logging.info(f'Error validating credentials for user {username}')
-            raise HTTPException(
-                status_code = status.HTTP_401_UNAUTHORIZED, 
-                detail = 'Could not validate credentials', 
-                headers = { 'WWW-Authenticate': 'Bearer' }
-            )
+            raise error
 
 def token(data: dict, delta: Union[timedelta, None] = None) -> str:
     payload = data.copy()
@@ -64,6 +61,7 @@ def user(data: Annotated[str, Depends(oauth2)]) -> dict:
         detail = 'Could not validate credentials', 
         headers = { 'WWW-Authenticate': 'Bearer' }
     )
+
     try:
         payload = jwt.decode(data, secret.key, algorithms = ['HS256'])
         username: str = payload.get('sub')
