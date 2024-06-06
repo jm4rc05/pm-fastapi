@@ -16,8 +16,7 @@ from dotenv import load_dotenv
 from Secweb import SecWeb
 from api.db.database import session_factory, Base, engine
 from api.db.models.account import Account, Token
-from api.middleware.authorization import user, token, authenticate
-from api.middleware.secret import Secret
+from api.middleware.authorization import user, token, authenticate, RoleCheck
 from api.resolvers import sales, profiles
 
 
@@ -82,14 +81,28 @@ async def login(response: Response, data: Annotated[OAuth2PasswordRequestForm, D
             headers = {'WWW-Authenticate': 'Bearer'},
         )
     else:
-        access = token(data = { 'sub': account.name }, delta = timedelta(seconds = API_TOKEN_DURATION))
+        access = token(
+            data = { 
+                'username': account.name, 
+                'roles': [role.name for role in account.roles] 
+            }, 
+            delta = timedelta(seconds = API_TOKEN_DURATION)
+        )
 
     return Token(token = access, type = 'bearer')
 
 @api.post(
-    '/profiles'
+    '/profiles',
+    dependencies = [Depends(RateLimiter(
+        times = API_LIMITER_RATE,
+        seconds = API_LIMITER_TIME
+    ))]
 )
-async def get_profile(request: Request, user: Annotated[Account, Depends(user)]):
+async def get_profiles(
+    _: Annotated[bool, Depends(RoleCheck(allowed = ['admin']))],
+    request: Request, 
+    user: Annotated[Account, Depends(user)]
+):
     return await profiles.serve(request)
 
 @api.post(
@@ -99,7 +112,11 @@ async def get_profile(request: Request, user: Annotated[Account, Depends(user)])
         seconds = API_LIMITER_TIME
     ))]
 )
-async def get_sales(request: Request, user: Annotated[Account, Depends(user)]):
+async def get_sales(
+    _: Annotated[bool, Depends(RoleCheck(allowed = ['user', 'admin']))],
+    request: Request, 
+    user: Annotated[Account, Depends(user)]
+):
     return await sales.serve(request)
 
 with open('headers.json') as settings:

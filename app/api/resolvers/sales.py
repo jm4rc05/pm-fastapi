@@ -4,7 +4,7 @@ from ariadne import load_schema_from_path, QueryType, MutationType, make_executa
 from ariadne.asgi import GraphQL
 from ariadne.validation import cost_validator, cost_directive
 from sqlalchemy import select, Numeric
-from sqlalchemy.orm import subqueryload, joinedload
+from sqlalchemy.orm import subqueryload
 from graphql import GraphQLSchema
 from decouple import config
 from dotenv import load_dotenv

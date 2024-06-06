@@ -168,3 +168,5 @@ def test_add_product(get_token):
         headers = header,
         json = { 'query': 'mutation { addProduct(name: "Produto contrabandeado", price: 1000.00) { name price } }' }
     )
+    print(response.json())
+    assert response.status_code == 200

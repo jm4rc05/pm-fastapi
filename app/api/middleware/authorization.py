@@ -3,6 +3,8 @@ from datetime import datetime, timedelta, timezone
 from typing import Annotated, Union
 from fastapi import Request, Response, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy import select
+from sqlalchemy.orm import subqueryload
 from decouple import config
 from dotenv import load_dotenv
 from passlib.context import CryptContext
@@ -32,7 +34,7 @@ def authenticate(username: str, password: str) -> Account:
     )
 
     with session_factory() as db:
-        account = db.query(Account).filter(Account.name == username).first()
+        account = db.scalars(select(Account).filter(Account.name == username).options(subqueryload(Account.roles))).first()
         try:
             if account and context.verify(password, account.key):
                 logging.info(f'Authenticated user {username}')
@@ -43,6 +45,26 @@ def authenticate(username: str, password: str) -> Account:
         except UnknownHashError:
             logging.info(f'Error validating credentials for user {username}')
             raise error
+
+def user(data: Annotated[str, Depends(oauth2)]) -> dict:
+    error = HTTPException(
+        status_code = status.HTTP_401_UNAUTHORIZED, 
+        detail = 'Could not validate credentials', 
+        headers = { 'WWW-Authenticate': 'Bearer' }
+    )
+
+    try:
+        payload = jwt.decode(data, secret.key, algorithms = ['HS256'])
+        username: str = payload.get('username')
+        if username is None:
+            logging.info('Username not informed')
+            raise error
+        roles: [str] = payload.get('roles')
+
+        return { 'username': username, 'roles':  roles }
+    except jwt.InvalidTokenError:
+        logging.info('Invalid token provided')
+        raise error
 
 def token(data: dict, delta: Union[timedelta, None] = None) -> str:
     payload = data.copy()
@@ -55,21 +77,19 @@ def token(data: dict, delta: Union[timedelta, None] = None) -> str:
 
     return jwt.encode(payload, secret.key, algorithm = 'HS256')
 
-def user(data: Annotated[str, Depends(oauth2)]) -> dict:
-    error = HTTPException(
-        status_code = status.HTTP_401_UNAUTHORIZED, 
-        detail = 'Could not validate credentials', 
-        headers = { 'WWW-Authenticate': 'Bearer' }
-    )
 
-    try:
-        payload = jwt.decode(data, secret.key, algorithms = ['HS256'])
-        username: str = payload.get('sub')
-        if username is None:
-            logging.info('Username not informed')
-            raise error
+class RoleCheck:
 
-        return { 'username': username }
-    except jwt.InvalidTokenError:
-        logging.info('Invalid token provided')
+    def __init__(self, allowed):
+        self.allowed = allowed
+
+    def __call__(self, user: Annotated[dict, Depends(user)]):
+        error = HTTPException(
+            status_code = status.HTTP_401_UNAUTHORIZED, 
+            detail = 'Not enough permissions'
+        )
+
+        if any(allowed == role for role in user['roles'] for allowed in self.allowed):
+            return True
+
         raise error

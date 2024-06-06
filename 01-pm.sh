@@ -34,4 +34,13 @@ psql -U "pmdb" -d "pmdb" <<-EOSQL
         '$password',
         '$ADMIN_SALT'
     );
+    INSERT INTO "public"."account" (
+        "name", 
+        "key",
+        "salt"
+    ) VALUES (
+        'user', 
+        '$password',
+        '$ADMIN_SALT'
+    );
 EOSQL
