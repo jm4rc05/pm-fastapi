@@ -1,4 +1,4 @@
-import os, logging
+import os, logging, logging.config
 from contextlib import contextmanager
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker, Session
@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 
 
 load_dotenv('.env.local')
+
+logging.config.fileConfig('logging.conf')
 
 POSTGRES_USER = config('POSTGRES_USER')
 POSTGRES_PASSWORD = config('POSTGRES_PASSWORD')
