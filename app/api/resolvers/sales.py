@@ -317,5 +317,5 @@ handler = GraphQL(
     debug = True
 ).http_handler
 
-def serve(request: Request) -> Response:
-    return handler.graphql_http_server(request)
+async def serve(request: Request) -> Response:
+    return await handler.graphql_http_server(request)
