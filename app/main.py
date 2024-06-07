@@ -1,4 +1,4 @@
-import os, logging, json
+import os, logging, logging.config, json
 import redis.asyncio as redis
 from fastapi import FastAPI, Request, Response, Depends, APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
@@ -22,15 +22,16 @@ from api.resolvers import sales, profiles
 
 load_dotenv('.env.local')
 
-logging.basicConfig()
-logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)
-
+logging.config.fileConfig('logging.conf')
 
 API_PORT = config('API_PORT', cast = int, default = 8000)
 API_RELOAD = config('API_RELOAD', cast = bool, default = True)
 API_LIMITER_RATE = config('API_LIMITER_RATE', cast = int, default = 2)
 API_LIMITER_TIME = config('API_LIMITER_TIME', cast = int, default = 5)
 API_TOKEN_DURATION = config('API_TOKEN_DURATION', cast = int, default = 60)
+
+logging.info(f'Limiter rate: {API_LIMITER_RATE} by {API_LIMITER_TIME} seconds')
+logging.info(f'Token duration: {API_TOKEN_DURATION}')
 
 REDIS_PASSWORD = config('REDIS_PASSWORD')
 REDIS_HOST = config('REDIS_HOST', default = 'localhost')
