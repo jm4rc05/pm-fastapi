@@ -1,4 +1,4 @@
-import os, logging, jwt
+import os, logging, logging.config, jwt
 from datetime import datetime, timedelta, timezone
 from typing import Annotated, Union
 from fastapi import Request, Response, Depends, HTTPException, status
@@ -17,10 +17,9 @@ from api.middleware.secret import Secret
 
 load_dotenv('.env.local')
 
-secret = Secret()
+logging.config.fileConfig('logging.conf')
 
-API_TOKEN_DURATION = config('API_TOKEN_DURATION', cast = int, default = 60)
-logging.info(f'Token duration: {API_TOKEN_DURATION}')
+secret = Secret()
 
 context = CryptContext(schemes = ['sha256_crypt'])
 oauth2 = OAuth2PasswordBearer(tokenUrl = 'token')
@@ -72,7 +71,7 @@ def token(data: dict, delta: Union[timedelta, None] = None) -> str:
     if delta:
         expiration = datetime.now(timezone.utc) + delta
     else:
-        expiration = datetime.now(timezone.utc) + timedelta(seconds = API_TOKEN_DURATION)
+        expiration = datetime.now(timezone.utc) + timedelta(seconds = app.main.API_TOKEN_DURATION)
     payload.update({ 'exp': expiration })
 
     return jwt.encode(payload, secret.key, algorithm = 'HS256')
