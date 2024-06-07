@@ -1,10 +1,17 @@
 #!/bin/zsh
+set -e
 
 function main() {
+
     echo 'ADMIN_KEY='$(openssl rand -hex 32) > .env.local
     echo 'ADMIN_SALT='$(openssl rand -hex 16) >> .env.local
     
-    ./environment.sh
+    cat .env.local > .workspace.env
+    echo 'POSTGRES_HOST=localhost' >> .workspace.env
+    echo 'REDIS_HOST=localhost' >> .workspace.env
+    echo 'API_TOKEN_DURATION=10' >> .workspace.env
+    echo 'API_LIMITER_RATE=10' >> .workspace.env
+    echo 'API_MAXIMUM_COST=1' >> .workspace.env
 
     pipenv lock && pipenv requirements > requirements.txt
 
@@ -14,6 +21,7 @@ function main() {
     docker compose up --detach
 
     docker logs app --follow
+
 }
 
 main
