@@ -1,5 +1,26 @@
 {
-    "csp": {"default-src": ["'self'"]}, 
+    "csp": {
+        "default-src": ["'self'"],
+        "script-src": [
+            "'self'", 
+            "'strict-dynamic'",
+            "'unsafe-inline'"
+        ],
+        "object-src": ["'none'"],
+        "child-src": ["'self'"],
+        "frame-src": ["'self'"],
+        "style-src": [
+            "'self'",
+            "'unsafe-inline'"
+        ],
+        "font-src": ["'self'"],
+        "img-src": [
+            "'self'", 
+            "data:"
+        ],
+        "frame-ancestors": ["'self'"],
+        "base-uri": ["'self'"]
+    }, 
     "xframe": {"X-Frame-Options": "SAMEORIGIN"}, 
     "hsts": {"max-age": 4, "preload": true}, 
     "wshsts": {"max-age": 10, "preload": true},
