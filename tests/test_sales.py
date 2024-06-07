@@ -1,4 +1,4 @@
-import pytest, requests, pprint
+import pytest, requests, pprint, json
 from pytest import fixture
 from time import sleep
 from decouple import config
@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv('.env.local')
 load_dotenv('.workspace.env')
-print(f'*** ADMIN_KEY *** {config("ADMIN_KEY")} ***')
+
 
 HOST_URL = 'http://localhost:8000'
 SERVICE_URL = f'{HOST_URL}/sales'
@@ -117,18 +117,17 @@ def test_update_customer(get_token):
     print(response.json())
     assert response.status_code == 200
 
-@pytest.mark.skip
 def test_cost(get_token):
     header = get_token
-    response = requests.post(
-        SERVICE_URL, 
-        headers = header, 
-        json = { 'query': '{ persons { name title } }' }
-    )
+    with open('tests/category.json') as f:
+        response = requests.post(
+            SERVICE_URL, 
+            headers = header, 
+            json = json.load(f)
+        )
     print(response.json())
-    assert response.status_code == 200
+    assert response.status_code >= 400
 
-@pytest.mark.skip
 @pytest.mark.order(before = 'test_token_duration')
 def test_rate_limit(get_token):
     header = get_token
@@ -147,7 +146,6 @@ def test_rate_limit(get_token):
     pprint.PrettyPrinter(indent = 2).pprint(dict(response.headers))
     assert response.status_code == 429
 
-@pytest.mark.skip
 @pytest.mark.order('last')
 def test_token_duration(get_token):
     header = get_token
