@@ -1,0 +1,34 @@
+query category($id: Int!) { 
+    category(id: $id) { 
+        name 
+        customers { 
+            id 
+            name 
+            orders { 
+                id 
+                shop { name } 
+                items { 
+                    product { 
+                        name 
+                        price 
+                    } 
+                    quantity 
+                    value 
+                } 
+            } 
+        } 
+        shops { 
+            id 
+            name 
+            sales { 
+                id 
+                customer { name } 
+                items { 
+                    product { name } 
+                    quantity 
+                    value 
+                } 
+            } 
+        } 
+    } 
+}

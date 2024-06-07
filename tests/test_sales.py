@@ -109,21 +109,30 @@ def test_update_shop(get_token):
 
 def test_update_customer(get_token):
     header = get_token
-    response = requests.post(
-        SERVICE_URL, 
-        headers = header, 
-        json = { 'query': 'mutation { updateCustomer(id: 1, name: "Mané") { name } }' }
-    )
+    with open('tests/graphql/updateCustomer.graphql') as f:
+        query = f.read()
+        variables = { 
+            "id": "1",
+            "name": "Mané" 
+        }
+        response = requests.post(
+            SERVICE_URL, 
+            headers = header, 
+            # json = { 'query': 'mutation { updateCustomer(id: 1, name: "Mané") { name } }' }
+            json = { "query": query, "variables": variables }
+        )
     print(response.json())
     assert response.status_code == 200
 
 def test_cost(get_token):
     header = get_token
-    with open('tests/category.json') as f:
+    with open('tests/graphql/category.graphql') as f:
+        query = f.read()
+        variables = { "id": 1 }
         response = requests.post(
             SERVICE_URL, 
             headers = header, 
-            json = json.load(f)
+            json = { "query": query, "variables": variables }
         )
     print(response.json())
     assert response.status_code >= 400
