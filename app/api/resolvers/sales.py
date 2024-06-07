@@ -2,7 +2,7 @@ import os, logging, logging.config
 from fastapi import Request, Response
 from ariadne import load_schema_from_path, QueryType, MutationType, make_executable_schema
 from ariadne.asgi import GraphQL
-from ariadne.validation import cost_validator, cost_directive
+from ariadne.validation import cost_validator
 from sqlalchemy import select, Numeric
 from sqlalchemy.orm import subqueryload
 from graphql import GraphQLSchema
