@@ -1,4 +1,4 @@
-import os, logging
+import os, logging, logging.config
 from fastapi import Request, Response
 from ariadne import load_schema_from_path, QueryType, MutationType, make_executable_schema
 from ariadne.asgi import GraphQL
@@ -15,7 +15,10 @@ from api.db.models.sales import Category, Address, Shop, Customer, Product, Cart
 
 load_dotenv('.env.local')
 
+logging.config.fileConfig('logging.conf')
+
 API_MAXIMUM_COST = config('API_MAXIMUM_COST', cast = int, default = 10)
+logging.info(f'Maximum cost: {API_MAXIMUM_COST}')
 
 query = QueryType()
 mutation = MutationType()
@@ -68,7 +71,6 @@ def addCategory(_, __, name: str) -> Category:
         db.add(_category)
         db.commit()
         db.refresh(_category)
-        logging.info(f'Added {__name__} {name}')
 
         return _category
 
@@ -79,7 +81,6 @@ def addAddress(_, __, street: str, city: str, county: str, postal: str, country:
         db.add(_address)
         db.commit()
         db.refresh(_address)
-        logging.info(f'Added {__name__} {street}/{city}')
 
         return _address
 
@@ -94,7 +95,6 @@ def addShop(_, __, name: str, category: int = None, address: int = None) -> Shop
         db.add(_shop)
         db.commit()
         db.refresh(_shop)
-        logging.info(f'Added {__name__} {name}')
 
         return _shop
 
@@ -109,7 +109,6 @@ def addCustomer(_, __, name: str, category: int = None, address: int = None) -> 
         db.add(_customer)
         db.commit()
         db.refresh(_customer)
-        logging.info(f'Added {__name__} {name}')
 
         return _customer
 
@@ -120,7 +119,6 @@ def addProduct(_, __, name: str, price: Numeric) -> Product:
         db.add(_product)
         db.commit()
         db.refresh(_product)
-        logging.info(f'Added {__name__} {name}')
         
         return _product
 
@@ -131,7 +129,6 @@ def addCart(_, __, customer: int, shop: int) -> Cart:
         db.add(_cart)
         db.commit()
         db.refresh(_cart)
-        logging.info(f'Added {__name__}')
 
         return _cart
 
@@ -145,7 +142,6 @@ def addItem(_, __, cart: int, product: int, quantity: int) -> Item:
             db.add(_item)
             db.commit()
             db.refresh(_item)
-            logging.info(f'Added {__name__}')
             id = _item.id
             _item = db.scalars(select(Item).filter(Item.id == id).options(subqueryload('*'))).first()
 
@@ -160,7 +156,6 @@ def updateCategory(_, __, id: int, name: str = None) -> Category:
                 _category.name = name
             db.commit()
             db.refresh(_category)
-            logging.info(f'Updated {__name__} {name}')
         
         return _category
 
@@ -181,7 +176,6 @@ def updateAddress(_, __, id: int, street: str = None, city: str = None, county: 
                 _address.country = country
             db.commit()
             db.refresh(_address)
-            logging.info(f'Updated {__name__} {street}/{city}')
 
         return _address
 
@@ -198,7 +192,6 @@ def updateShop(_, __, id: int, name: str = None, category: str = None, address: 
                 _shop.address_id = address
             db.commit()
             db.refresh(_shop)
-            logging.info(f'Updated {__name__} {name}')
         
         return _shop
 
@@ -215,7 +208,6 @@ def updateCustomer(_, __, id: int, name: str = None, category: str = None, addre
                 _customer.address_id = address
             db.commit()
             db.refresh(_customer)
-            logging.info(f'Updated {__name__} {name}')
 
         return _customer
 
@@ -230,7 +222,6 @@ def updateProduct(_, __, id: int, name: str = None, price: Numeric = None) -> Pr
                 _product.price = price
             db.commit()
             db.refresh(_product)
-            logging.info(f'Updated {__name__} {name}')
         
         return _product
 
@@ -245,7 +236,6 @@ def updateItem(_, __, id: int, quantity: int = None, value: Numeric = None) -> I
                 _item.value = value
             db.commit()
             db.refresh(_item)
-            logging.info(f'Updated {__name__}')
         
         return _item
 
@@ -256,7 +246,7 @@ def deleteCategory(_, __, id: int) -> bool:
         if _category:
             db.delete(_category)
             db.commit()
-            logging.info(f'Deleted {__name__} {_category.name}')
+
             return True
 
         return False
@@ -268,7 +258,7 @@ def deleteAddress(_, __, id: int) -> bool:
         if _address:
             db.delete(_address)
             db.commit()
-            logging.info(f'Deleted {__name__} {_address.name}')
+
             return True
         
         return False
@@ -280,7 +270,7 @@ def deleteShop(_, __, id: int) -> bool:
         if _shop:
             db.delete(_shop)
             db.commit()
-            logging.info(f'Deleted {__name__} {_shop.name}')
+
             return True
         
         return False
@@ -292,7 +282,7 @@ def deleteCustomer(_, __, id: int) -> bool:
         if _customer:
             db.delete(_customer)
             db.commit()
-            logging.info(f'Deleted {__name__} {_customer.name}')
+
             return True
         
         return False
@@ -304,7 +294,7 @@ def deleteProduct(_, __, id: int) -> bool:
         if _product:
             db.delete(_product)
             db.commit()
-            logging.info(f'Deleted {__name__} {_product.name}')
+
             return True
 
         return False
@@ -316,7 +306,7 @@ def deleteItem(_, __, id: int) -> bool:
         if _item:
             db.delete(_item)
             db.commit()
-            logging.info(f'Deleted {__name__}')
+
             return True
 
         return False

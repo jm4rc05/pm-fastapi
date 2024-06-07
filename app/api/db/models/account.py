@@ -1,4 +1,3 @@
-import logging
 from sqlalchemy import Column, Integer, String, Table, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from api.db.database import Base, session_factory
