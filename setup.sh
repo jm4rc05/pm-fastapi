@@ -9,8 +9,9 @@ function main() {
     cat .env.local > .workspace.env
     echo 'POSTGRES_HOST=localhost' >> .workspace.env
     echo 'REDIS_HOST=localhost' >> .workspace.env
-    echo 'API_TOKEN_DURATION=10' >> .workspace.env
+    echo 'API_TOKEN_DURATION=15' >> .workspace.env
     echo 'API_LIMITER_RATE=100' >> .workspace.env
+    echo 'API_LIMITER_TIME=10' >> .workspace.env
     echo 'API_MAXIMUM_COST=5' >> .workspace.env
 
     pipenv lock && pipenv requirements > requirements.txt
