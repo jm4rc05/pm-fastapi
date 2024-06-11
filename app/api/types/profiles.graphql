@@ -11,6 +11,6 @@ type Role {
 }
 
 type Query {
-    account(id: Int!): Account
-    role(id: Int!): Role
+    account(id: Int): Account
+    role(id: Int): Role
 }

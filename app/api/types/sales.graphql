@@ -63,43 +63,43 @@ type Item {
 
 type Query {
     category(id: Int): Category @cost(complexity: 1, multipliers: ["shops", "customers"], useMultipliers: true)
-    categories: [Category!]! @cost(complexity: 2, multipliers: ["shops", "customers"], useMultipliers: true)
+    categories: [Category] @cost(complexity: 2, multipliers: ["shops", "customers"], useMultipliers: true)
     address(id: Int): Address @cost(complexity: 1, multipliers: ["shops", "customers"], useMultipliers: true)
     shop(id: Int): Shop @cost(complexity: 1, multipliers: ["address"], useMultipliers: true)
     customer(id: Int): Customer @cost(complexity: 1, multipliers: ["orders"], useMultipliers: true)
-    product(id: Int!): Product @cost(complexity: 1, multipliers: ["sales"], useMultipliers: true)
-    cart(id: Int!): Cart @cost(complexity: 1, multipliers: ["items"], useMultipliers: true)
-    item(id: Int!): Item
+    product(id: Int): Product @cost(complexity: 1, multipliers: ["sales"], useMultipliers: true)
+    cart(id: Int): Cart @cost(complexity: 1, multipliers: ["items"], useMultipliers: true)
+    item(id: Int): Item
 }
 
 
 type Mutation {
     addCategory(
-        name: String!
+        name: String
     ): Category
     addAddress(
-        street: String!
-        city: String!
-        county: String!
-        postal: String!
-        country: String!
+        street: String
+        city: String
+        county: String
+        postal: String
+        country: String
     ): Address
     addShop(
-        name: String!
+        name: String
         category: Int
         address: Int
     ): Shop
     addCustomer(
-        name: String!
+        name: String
         category: Int
         address: Int
     ): Customer
     updateCategory(
-        id: Int!
+        id: Int
         name: String
     ): Category
     updateAddress(
-        id: Int!
+        id: Int
         street: String
         city: String
         county: String
@@ -107,59 +107,59 @@ type Mutation {
         country: String
     ): Address
     updateShop(
-        id: Int!
+        id: Int
         name: String
         category: Int
         address: Int
     ): Shop
     updateCustomer(
-        id: Int!
+        id: Int
         name: String
         category: Int
         address: Int
     ): Customer
     deleteCategory(
-        id: Int!
+        id: Int
     ): Boolean
     deleteAddress(
-        id: Int!
+        id: Int
     ): Boolean
     deleteShop(
-        id: Int!
+        id: Int
     ): Boolean
     deleteCustomer(
-        id: Int!
+        id: Int
     ): Boolean
     addProduct(
-        name: String!
-        price: Float!
+        name: String
+        price: Float
     ): Product
     addCart(
-        customer: Int!
-        shop: Int!
+        customer: Int
+        shop: Int
     ): Cart
     addItem(
-        cart: Int!
-        product: Int!
-        quantity: Int!
+        cart: Int
+        product: Int
+        quantity: Int
     ): Item
     updateProduct(
-        id: Int!
+        id: Int
         name: String
         price: Float
     ): Product
     updateItem(
-        id: Int!
+        id: Int
         quantity: Int
         value: Float
     ): Item
     deleteProduct(
-        id: Int!
+        id: Int
     ): Boolean
     deleteCart(
-        id: Int!
+        id: Int
     ): Boolean
     deleteItem(
-        id: Int!
+        id: Int
     ): Boolean
 }
