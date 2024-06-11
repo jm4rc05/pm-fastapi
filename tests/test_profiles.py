@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 
 load_dotenv('.env.local')
 load_dotenv('.workspace.env')
-print(f'*** ADMIN_KEY *** {config("ADMIN_KEY")} ***')
 
 HOST_URL = 'http://localhost:8000'
 SERVICE_URL = f'{HOST_URL}/profiles'
@@ -46,20 +45,59 @@ def get_forged_token(request):
 
 def test_get_forged_token(get_forged_token):
     header = get_forged_token
+    query = '''
+        query ($id: Int) { 
+            account(id: $id) { 
+                name roles { 
+                    id name 
+                    
+                } 
+            } 
+        }
+    '''
+    variables = {
+        'id': 2
+    }
     response = requests.post(
         SERVICE_URL,
         headers = header,
-        json = { 'query': '{ account(id: 2) { name roles { id name } } }' }
+        json = { 'query': query, 'variables': variables }
     )
     print(response.json())
     assert response.status_code == 401
 
 def test_get_account(get_token):
     header = get_token
+    query = '''
+        query ($id: Int) { 
+            account(id: $id) { 
+                name roles { 
+                    id name 
+                    
+                } 
+            } 
+        }
+    '''
+    variables = {
+        'id': 2
+    }
     response = requests.post(
         SERVICE_URL,
         headers = header,
-        json = { 'query': '{ account(id: 2) { name roles { id name } } }' }
+        json = { 'query': query, 'variables': variables }
     )
     print(response.json())
     assert response.status_code == 200
+
+def test_cors(get_token):
+    header = get_token
+    header.update({ 'Origin': 'http://example.com' })
+    header.update({ 'Access-Control-Request-Method': 'POST' })
+    header.update({ 'Access-Control-Request-Headers': 'X-Requested-With' })
+    response = requests.options(
+        SERVICE_URL,
+        headers = header
+    )
+    pprint.PrettyPrinter(indent = 2).pprint(dict(response.headers))
+    assert response.status_code == 400
+    assert response.text == 'Disallowed CORS origin'

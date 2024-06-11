@@ -3,6 +3,7 @@ import redis.asyncio as redis
 from fastapi import FastAPI, Request, Response, Depends, APIRouter, HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi_route_logger_middleware import RouteLoggerMiddleware
 from fastapi_limiter import FastAPILimiter
 from fastapi_limiter.depends import RateLimiter
@@ -120,12 +121,33 @@ async def get_sales(
 ):
     return await sales.serve(request)
 
-with open('headers.json') as settings:
-     SecWeb(
+with open('config.json') as f:
+    config = json.load(f)
+
+    origins = config['origins']
+    api.add_middleware(
+        CORSMiddleware,
+        allow_origins = origins,
+        allow_credentials = True,
+        allow_methods = ['OPTIONS', 'GET', 'POST'],
+        allow_headers = ['*']
+    )
+
+    security = config['security']
+    SecWeb(
         app = api, 
-        Option = json.load(settings), 
+        Option = security, 
         Routes = [route.path for route in api.routes]
     )
+
+@api.get("/graphql/")
+@api.options("/graphql/")
+async def graphql(request: Request):
+    return await sales.graphql(request)
+
+@api.post('/graphql/')
+async def graphql(request: Request):
+    return await sales.graphql(request)
 
 if __name__ == '__main__':
     from uvicorn import run
